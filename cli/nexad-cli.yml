@@ -1,0 +1,56 @@
+generated: '2026-07-20'
+method: searched
+source: https://soku.ai/cli
+skill_source: https://soku.ai/cli/skill.md
+name: Soku CLI
+binary: soku
+summary: >-
+  Soku CLI gives shell-based AI agents (Claude Code, Codex, Cursor) trusted
+  marketing data, focused Soku skills, covered third-party APIs via server-side
+  egress, and review-gated write actions. Device-login auth; workspace/brand
+  selection is remote (not inferred from the local folder).
+prerequisites:
+  - Node.js 20 or newer
+  - npm
+install:
+  - method: npm
+    command: npm i -g @soku-ai/cli
+authentication:
+  scheme: oauth-device-flow
+  commands:
+    - soku auth login
+    - soku auth login --no-wait
+    - soku auth login --device-code <device_code>
+  notes: >-
+    Token stored in ~/.soku/credentials.json (mode 0600). For shell/container
+    agents prefix login with SOKU_NO_KEYCHAIN=1 to avoid OS-keychain waits.
+command_groups:
+  - group: update
+    commands: [soku --version, soku update status]
+  - group: auth
+    commands: [soku auth login]
+  - group: workspace
+    commands: [soku workspace status, soku workspace resolve <brand>, soku workspace use-brand <brand>]
+  - group: skill
+    commands: [soku skill list, soku skill install <skill-slug> --global, soku skill status --global, soku skill list-installed --global]
+    notes: Installed business skills appear with a `soku-` prefix in agent skill autocomplete.
+  - group: ads
+    commands: [soku ads --help]
+    notes: Google and Meta reporting; mutations are review-gated (create a pending review a human approves).
+  - group: analytics
+    commands: [soku ga4 --help, soku gsc --help, soku posthog --help]
+    notes: GA4 site analytics, Google Search Console, PostHog product analytics.
+  - group: egress
+    commands: [soku egress providers, 'soku egress -- curl ...']
+    notes: Covered third-party APIs with credentials injected server-side.
+  - group: seo-hosting
+    commands: [soku seo-hosting status]
+    notes: Inspect, author, and publish pages; direct-write surface requiring explicit confirmation. Use --cf-token-env / --cf-token-stdin for Cloudflare tokens.
+  - group: review
+    commands: [soku review approve <id>]
+    notes: Human-authorized approval of review-gated writes; must never be auto-approved.
+key_flows:
+  - Install/update CLI -> device login -> select remote workspace/brand -> install task-scoped skills -> verify surfaces -> run read-only performance health check.
+safety:
+  - Never prints Soku tokens or asks the user to paste provider keys.
+  - Ads writes are review-gated; SEO Hosting is a direct-write surface requiring confirmation.

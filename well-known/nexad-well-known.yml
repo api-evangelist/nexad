@@ -1,0 +1,19 @@
+generated: '2026-07-20'
+method: searched
+notes: >-
+  Probed the /.well-known/ discovery surface on the primary hosts. No documents
+  returned 200 during this pass; absence is valid recorded data. No WellKnown /
+  SecurityTxt pointer is emitted because nothing was found.
+hosts:
+  - host: https://nex.ad
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/api-catalog, status: 404}
+      - {path: /.well-known/ai-plugin.json, status: 404}
+      - {path: /llms.txt, status: 404}
+  - host: https://soku.ai
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /llms.txt, status: 404}

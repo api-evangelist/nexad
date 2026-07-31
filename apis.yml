@@ -1,9 +1,30 @@
 aid: nexad
 name: Nexad
-description: 'Nexad is a company surfaced as a portfolio company of prosus-ventures and added to the API
-  Evangelist network as a stub for enrichment. Sector: ai. This profile is a lead awaiting the enrichment
-  pipeline.'
+description: >-
+  Nexad (About Intelligence, Inc.) is an AI-native advertising company backed by
+  Prosus Ventures. It ships the Nexad Android Ads SDK — a Java/Kotlin library for
+  embedding contextual, native, WebView, chat-message, and modal-overlay ads
+  directly into mobile and AI-chat applications — and operates Soku AI, an
+  autonomous marketing agent (the NexStudio API at api.soku.ai) that runs and
+  optimizes ad campaigns across Google, Meta, TikTok, and ChatGPT Ads on a 24/7
+  perceive–decide–act loop with human-in-the-loop approvals. Developers integrate
+  via the Android SDK, the Soku CLI (@soku-ai/cli) for shell-based AI agents such
+  as Claude Code, Codex, and Cursor, an authenticated MCP endpoint, and a hub of
+  100+ open-source marketing skills.
 url: https://raw.githubusercontent.com/api-evangelist/nexad/refs/heads/main/apis.yml
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://docs.nex.ad/img/logo.svg
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
@@ -12,16 +33,113 @@ x-tier: stub
 x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-20'
 tags:
 - Company
-- Ai
-apis: []
+- Artificial Intelligence
+- Advertising
+- Marketing
+- Marketing Automation
+- Contextual Advertising
+- Mobile SDK
+- Agent
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- name: Nexad Android Ads SDK
+  description: >-
+    Java/Kotlin Android SDK for monetizing apps with native, WebView, chat-message,
+    and modal-overlay ad formats — including contextual ads for AI-chat interfaces.
+    Installed via com.nexad:sdk and initialized with an App ID + Publisher ID.
+  humanURL: https://docs.nex.ad/docs/android/intro
+  tags:
+  - Advertising
+  - Android
+  - SDK
+  properties:
+  - type: Documentation
+    url: https://docs.nex.ad
+  - type: GettingStarted
+    url: https://docs.nex.ad/docs/android/getting-started
+  - type: Packages
+    url: packages/nexad-packages.yml
+  - type: Components
+    url: components/nexad-components.yml
+- name: Soku (NexStudio) API
+  description: >-
+    The Soku AI platform API (identifies as "NexStudio API"). Powers an autonomous
+    marketing agent across ads, analytics (GA4, GSC, PostHog), SEO hosting, and
+    review-gated writes. Authenticated via OAuth device login; also exposed to
+    agents via the Soku CLI and an MCP endpoint.
+  humanURL: https://soku.ai/docs
+  baseURL: https://api.soku.ai
+  tags:
+  - Marketing
+  - AI Agent
+  - Analytics
+  properties:
+  - type: Documentation
+    url: https://soku.ai/docs
+  - type: Authentication
+    url: authentication/nexad-authentication.yml
+  - type: MCPServer
+    url: mcp/nexad-mcp.yml
+  - type: CLI
+    url: cli/nexad-cli.yml
 common:
 - type: Website
   url: https://nex.ad
+- type: DeveloperPortal
+  url: https://docs.nex.ad
+- type: Documentation
+  url: https://soku.ai/docs
+- type: APIReference
+  url: https://docs.nex.ad/docs/android/intro
+- type: GettingStarted
+  url: https://docs.nex.ad/docs/android/getting-started
+- type: Blog
+  url: https://soku.ai/blog
+- type: ChangeLog
+  url: https://soku.ai/changelog
+- type: Pricing
+  url: https://soku.ai/pricing
+- type: SignUp
+  url: https://soku.ai/sign-up
+- type: TermsOfService
+  url: https://soku.ai/terms
+- type: PrivacyPolicy
+  url: https://soku.ai/privacy
+- type: Support
+  url: https://join.slack.com/t/soku-talk/shared_invite/zt-3s9i1a4w7-AWlkU3GAiar3wJM4ToYLEg
+- type: Integrations
+  url: https://soku.ai/integrations
+- type: Packages
+  url: packages/nexad-packages.yml
+- type: SDKs
+  url: packages/nexad-packages.yml
+- type: CLI
+  url: cli/nexad-cli.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: MCPServer
+  url: mcp/nexad-mcp.yml
+- type: Authentication
+  url: authentication/nexad-authentication.yml
+- type: Components
+  url: components/nexad-components.yml
+- type: Lifecycle
+  url: lifecycle/nexad-lifecycle.yml
+- type: ChangeLog
+  url: changelog/nexad-changelog.yml
+- type: LLMsTxt
+  url: llms/nexad-llms.txt
+- type: DomainSecurity
+  url: security/nexad-domain-security.yml
+x-enrichment:
+  date: '2026-07-20'
+  status: enriched
+  artifacts_added: 11
+  pass: local-v1

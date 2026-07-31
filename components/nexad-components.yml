@@ -1,0 +1,22 @@
+generated: '2026-07-20'
+method: searched
+source: https://docs.nex.ad/docs/android/intro
+notes: >-
+  Client-side ad UI components shipped by the Nexad Android SDK for embedding
+  ads natively into mobile apps (including chat-based AI interfaces). Distinct
+  from server-side SDKs.
+families:
+  - family: Android ad views
+    loader: 'com.nexad:sdk (NexadSDK)'
+    platform: android
+    components:
+      - name: Native ad view
+        api: NexadSDK.getInstance().loadNativeAd + createNativeAdView
+        description: Native ad rendered inline with app content.
+      - name: WebView ad
+        api: NexadSDK.getInstance().loadWebViewAd
+        description: WebView-based ad unit.
+      - name: Chat message ad
+        description: Ad rendered as a message inside chat / AI-conversation interfaces.
+      - name: Modal overlay ad
+        description: Full-screen / modal overlay ad unit.

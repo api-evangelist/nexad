@@ -1,0 +1,35 @@
+generated: '2026-07-20'
+method: searched
+source:
+  - https://docs.nex.ad/docs/android/getting-started
+  - https://soku.ai/cli/skill.md
+notes: >-
+  Nexad has no published OpenAPI, so this profile is searched from provider docs
+  rather than derived. Two distinct products with distinct auth models.
+summary:
+  types: [apiKey, oauth2]
+  api_key_in: [sdk-config]
+  oauth2_flows: [deviceCode]
+schemes:
+  - name: nexad-android-sdk
+    product: Nexad Android Ads SDK
+    type: apiKey
+    credentials:
+      - App ID
+      - Publisher ID
+    provisioning: >-
+      Credentials are issued after submitting the Nexad contact form; the team
+      returns a unique App ID and Publisher ID passed to NexadSDK.initialize().
+    source: https://docs.nex.ad/docs/android/getting-started
+  - name: soku-nexstudio-api
+    product: Soku (NexStudio) API
+    type: oauth2
+    flow: deviceCode
+    endpoint: https://api.soku.ai
+    detail: >-
+      The Soku CLI authenticates via an OAuth device-login flow (`soku auth
+      login`), issuing a bearer token stored locally (mode 0600). Direct calls
+      to api.soku.ai/v1 and api.soku.ai/mcp return HTTP 401 without a token.
+      Third-party provider credentials are injected server-side via `soku egress`
+      rather than handled by the user.
+    source: https://soku.ai/cli/skill.md

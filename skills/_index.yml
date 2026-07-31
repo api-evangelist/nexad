@@ -1,0 +1,24 @@
+generated: '2026-07-20'
+method: searched
+source: https://soku.ai/cli/skill.md
+notes: >-
+  Provider-published Agent Skill captured verbatim. Soku also operates an
+  open-source Skills hub (100+ marketing skills for Claude/ChatGPT/Cursor/Manus)
+  at https://soku.ai/skills; individual hub skills are installable via the Soku
+  CLI (`soku skill install <slug>`).
+skills:
+  - file: nexad-soku-cli-agent.md
+    name: Use Soku CLI With an AI Agent
+    provider_published: true
+    api: https://api.soku.ai
+    source: https://soku.ai/cli/skill.md
+    operations:
+      - soku auth login
+      - soku workspace use-brand
+      - soku skill install
+      - soku ads
+      - soku ga4
+      - soku egress
+hub:
+  url: https://soku.ai/skills
+  description: 100+ open-source marketing skills (SEO, content, ads, email) for use in Claude, ChatGPT, Cursor, and Manus.

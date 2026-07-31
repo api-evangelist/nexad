@@ -1,0 +1,19 @@
+generated: '2026-07-20'
+method: searched
+status: published
+source: https://api.soku.ai/mcp
+notes: >-
+  Soku exposes an authenticated MCP endpoint. A live probe of
+  https://api.soku.ai/mcp returned HTTP 401 (auth required) and mcp.soku.ai
+  resolves, indicating a real hosted MCP server gated behind the same Soku
+  device-login token used by the CLI. The tool list could not be enumerated
+  without authentication, so tools are unknown. Separately, the Soku CLI is the
+  primary agent-integration surface for Claude Code / Codex / Cursor.
+server:
+  name: soku
+  transport: http
+  url: https://api.soku.ai/mcp
+  auth: required
+  probe_status: 401
+  probed: '2026-07-20'
+tools: []

@@ -1,0 +1,24 @@
+generated: '2026-07-20'
+method: searched
+source: https://soku.ai/changelog
+product: Soku AI
+scheme: dated
+notes: >-
+  Soku publishes a dated product changelog. Recent window captured verbatim from
+  the public changelog; the live page is the source of truth for full history.
+entries:
+  - date: '2026-07-19'
+    title: More reliable daily ad data sync
+    area: Reporting and sync reliability
+    breaking: false
+    highlights:
+      - Restored complete daily ad data sync after a regression that could leave campaign, ad set, and ad metrics frozen for some accounts.
+      - Hardened Meta data pulls to automatically request smaller pages when the platform rejects an oversized response, so large accounts sync through instead of stalling.
+  - date: '2026-07-16'
+    title: Credit packs with affiliate attribution, redemption-code plans, Slack and Shoplazza connectors, faster account connect, and chat reliability fixes
+    area: Billing, plans, and affiliates
+    breaking: false
+    highlights:
+      - Added credit pack purchases with affiliate attribution.
+      - Redemption codes can now grant a billing plan alongside credits.
+      - New Slack and Shoplazza connectors; faster account connect; chat reliability fixes.

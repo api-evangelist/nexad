@@ -1,0 +1,26 @@
+generated: '2026-07-20'
+method: searched
+source:
+  - https://api.soku.ai
+  - https://soku.ai/changelog
+product: Soku (NexStudio) API
+versioning:
+  scheme: uri-path
+  current: v1
+  api_release: v4.34.1
+  detail: >-
+    The Soku API root (https://api.soku.ai) reports {"message":"Welcome to
+    NexStudio API","version":"v4.34.1"} and exposes an authenticated /v1 path.
+changelog: https://soku.ai/changelog
+deprecation:
+  policy_url: null
+  sunset_header: null
+  notes: No published deprecation/sunset policy found during this pass.
+status_page:
+  url: null
+  notes: >-
+    No confirmed public status page. status.soku.ai resolves (Cloudflare) but did
+    not return content during the probe; not asserted.
+sla:
+  url: null
+deprecated_operations: []
