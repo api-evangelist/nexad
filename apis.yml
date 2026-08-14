@@ -2,15 +2,20 @@ aid: nexad
 name: Nexad
 description: >-
   Nexad (About Intelligence, Inc.) is an AI-native advertising company backed by
-  Prosus Ventures. It ships the Nexad Android Ads SDK — a Java/Kotlin library for
-  embedding contextual, native, WebView, chat-message, and modal-overlay ads
-  directly into mobile and AI-chat applications — and operates Soku AI, an
-  autonomous marketing agent (the NexStudio API at api.soku.ai) that runs and
-  optimizes ad campaigns across Google, Meta, TikTok, and ChatGPT Ads on a 24/7
-  perceive–decide–act loop with human-in-the-loop approvals. Developers integrate
-  via the Android SDK, the Soku CLI (@soku-ai/cli) for shell-based AI agents such
-  as Claude Code, Codex, and Cursor, an authenticated MCP endpoint, and a hub of
-  100+ open-source marketing skills.
+  Andreessen Horowitz, Point72 and Prosus. It ships the Nexad Android Ads SDK — a
+  Java/Kotlin library for embedding contextual, native, WebView, chat-message, and
+  modal-overlay ads directly into mobile and AI-chat applications — and operates
+  Soku AI, an autonomous marketing agent (the NexStudio API at api.soku.ai) that
+  runs and optimizes ad campaigns across Google, Meta, TikTok, and ChatGPT Ads on
+  a 24/7 perceive–decide–act loop with human-in-the-loop approvals. Developers
+  integrate via the Android SDK, the Soku CLI (@soku-ai/cli) for shell-based AI
+  agents such as Claude Code, Codex, and Cursor, an authenticated MCP endpoint at
+  api.soku.ai/mcp, and an open-source marketing skills hub. Nexad publishes no
+  OpenAPI, but it does ship an unusually complete machine-readable substitute: a
+  281-action capability registry (18 namespaces) in its public MIT-licensed
+  soku-cli repository, where every action declares typed inputs, an output shape,
+  a read/write/risk mode and a requires_review flag — 124 of the 281 actions are
+  human-approval-gated at runtime.
 url: https://raw.githubusercontent.com/api-evangelist/nexad/refs/heads/main/apis.yml
 accessModel:
   pricing: unknown
@@ -28,12 +33,18 @@ image: https://docs.nex.ad/img/logo.svg
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
+- a16z
 - prosus-ventures
+x-investors-named:
+- Andreessen Horowitz
+- Point72
+- Prosus
+x-investors-source: https://nex.ad
 x-tier: stub
 x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-20'
+modified: '2026-08-13'
 tags:
 - Company
 - Artificial Intelligence
@@ -89,6 +100,21 @@ apis:
     url: mcp/nexad-mcp.yml
   - type: CLI
     url: cli/nexad-cli.yml
+  - type: Capabilities
+    name: Soku CLI capability registry (281 actions, 18 namespaces)
+    url: cli/nexad-capabilities.json
+  - type: AgenticAccess
+    url: agentic-access/nexad-agentic-access.yml
+  - type: Conventions
+    url: conventions/nexad-conventions.yml
+  - type: ErrorCatalog
+    url: errors/nexad-error-codes.yml
+  - type: DataModel
+    url: data-model/nexad-data-model.yml
+  - type: RateLimits
+    url: rate-limits/nexad-rate-limits.yml
+  - type: Plans
+    url: plans/nexad-plans-pricing.yml
 common:
 - type: Website
   url: https://nex.ad
@@ -135,11 +161,42 @@ common:
 - type: ChangeLog
   url: changelog/nexad-changelog.yml
 - type: LLMsTxt
+  name: llms.txt (provider-published, verbatim)
+  url: llms/nexad-soku-llms.txt
+- type: LLMsTxt
+  name: llms.txt (API Evangelist generated, company-wide)
   url: llms/nexad-llms.txt
 - type: DomainSecurity
   url: security/nexad-domain-security.yml
+- type: Security
+  name: Security policy (SECURITY.md)
+  url: https://github.com/About-Intelligence/soku-cli/blob/main/SECURITY.md
+- type: VulnerabilityDisclosure
+  url: security/nexad-vulnerability-disclosure.yml
+- type: GitHubOrganization
+  url: https://github.com/About-Intelligence
+- type: SourceCode
+  name: Soku CLI (MIT)
+  url: https://github.com/About-Intelligence/soku-cli
+- type: AgenticAccess
+  url: agentic-access/nexad-agentic-access.yml
+- type: Conventions
+  url: conventions/nexad-conventions.yml
+- type: ErrorCatalog
+  url: errors/nexad-error-codes.yml
+- type: DataModel
+  url: data-model/nexad-data-model.yml
+- type: Conformance
+  url: conformance/nexad-conformance.yml
+- type: Plans
+  url: plans/nexad-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/nexad-rate-limits.yml
+- type: Capabilities
+  name: Soku CLI capability registry (281 actions)
+  url: cli/nexad-capabilities.json
 x-enrichment:
-  date: '2026-07-20'
+  date: '2026-08-13'
   status: enriched
-  artifacts_added: 11
+  artifacts_added: 12
   pass: local-v1
