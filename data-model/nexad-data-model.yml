@@ -1,0 +1,238 @@
+generated: '2026-08-13'
+method: derived
+source: cli/nexad-capabilities.json
+source_url: https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/src/generated/capabilities.json
+product: Soku (NexStudio) API
+notes: >-
+  Nexad publishes no OpenAPI, so this entity graph is derived from the 281-action
+  capability registry the company ships in its own public repository — from the
+  id-reference input parameters (account_id, campaign_id, ad_group_id, ...) and
+  the declared output_shape of each action. Relationship cardinality is read from
+  the documented object model in the provider's ads-write reference, not guessed.
+  Two things to hold in mind reading this: (1) Soku's own tenancy entities
+  (Organization, Brand, Chat, Review) are genuinely first-party; (2) most of the
+  advertising entities are FEDERATED — they are the upstream ad platform's objects
+  (Meta, Google, TikTok, ChatGPT Ads) that Soku addresses by the platform's own
+  ids, so the "same" entity has a different shape per platform. Where the object
+  model actually diverges by platform that is recorded rather than flattened.
+
+tenancy:
+  detail: >-
+    Organization is the billing and membership boundary; Brand is the workspace an
+    agent operates inside. The provider's docs are explicit that Brand must be
+    selected REMOTELY (`soku workspace use-brand`) and must never be inferred from
+    the local working directory.
+  chain: Organization -> Brand -> connected ad/analytics accounts
+
+entities:
+  - name: Organization
+    first_party: true
+    id_field: null
+    description: Billing, membership and cross-brand reporting boundary. Roles are Admin and Member.
+    namespace: org
+    actions: [org/get_overview, org/get_usage_summary, org/list_activity, org/list_brands]
+    relationships:
+      - has_many: Brand
+      - has_many: Member
+  - name: Brand
+    first_party: true
+    description: >-
+      The workspace scope. Ad accounts, analytics properties and skills are granted
+      per brand; the registry refers to a ResourceBrandGrant filter on account listing.
+    relationships:
+      - belongs_to: Organization
+      - has_many: AdAccount
+      - has_many: SeoPage
+      - has_many: Skill
+  - name: Review
+    first_party: true
+    id_field: review_id
+    description: >-
+      A pending, human-approvable write. Created by any of the 124 review-gated
+      actions; single-use; failed approval is terminal. Bulk reviews execute
+      asynchronously after approval.
+    actions: [review/list, review/show, review/approve]
+    relationships:
+      - belongs_to: Brand
+  - name: AdAccount
+    first_party: false
+    id_field: account_id
+    reference_count: 176
+    description: >-
+      The most-referenced entity in the surface — 176 of 281 actions take an
+      account_id. Federated: the id is the upstream platform's own account id,
+      pinned per request.
+    platforms: [google, meta, tiktok, chatgpt_ads, linkedin]
+    relationships:
+      - belongs_to: Brand
+      - has_many: Campaign
+  - name: Campaign
+    first_party: false
+    id_field: campaign_id
+    reference_count: 40
+    description: Top-level delivery object. Creation defaults to PAUSED server-side on every platform.
+    relationships:
+      - belongs_to: AdAccount
+      - has_many: AdSet
+        via: campaign_id
+        platforms: [meta, tiktok]
+      - has_many: AdGroup
+        via: campaign_id
+        platforms: [google, chatgpt_ads]
+  - name: AdSet
+    first_party: false
+    id_field: adset_id
+    reference_count: 9
+    description: Meta/TikTok mid-tier delivery object carrying targeting, budget and optimization goal.
+    platforms: [meta, tiktok]
+    relationships:
+      - belongs_to: Campaign
+      - has_many: Ad
+  - name: AdGroup
+    first_party: false
+    id_field: ad_group_id
+    aliases: [adgroup_id]
+    reference_count: 18
+    description: >-
+      Google / ChatGPT Ads mid-tier object. The provider's docs call out the divergence
+      explicitly: on ChatGPT Ads, ads live under ad_group_id and NEVER adset_id, and a
+      ChatGPT Ads group is either `manual` (with authored ads) or `generative`.
+    platforms: [google, chatgpt_ads]
+    relationships:
+      - belongs_to: Campaign
+      - has_many: Ad
+      - has_many: Keyword
+        platforms: [google]
+  - name: Ad
+    first_party: false
+    id_field: ad_id
+    reference_count: 6
+    relationships:
+      - belongs_to: AdSet
+        platforms: [meta, tiktok]
+      - belongs_to: AdGroup
+        platforms: [google, chatgpt_ads]
+      - has_one: Creative
+        via: creative_id
+  - name: Creative
+    first_party: false
+    id_field: creative_id
+    description: >-
+      Meta creative. Built from an image_hash returned by asset upload, or from an
+      asset_feed_spec for dynamic (Advantage+) creative — the two are mutually exclusive.
+    relationships:
+      - belongs_to: AdAccount
+      - has_one: Page
+        via: page_id
+      - has_one: InstagramIdentity
+        via: instagram_user_id
+  - name: InstagramIdentity
+    first_party: false
+    id_field: instagram_user_id
+    description: >-
+      Required for Instagram placements. The registry is emphatic that the public
+      @handle and the Facebook Page id are both REJECTED — only the ad-account-connected
+      IG identity id works.
+  - name: Page
+    first_party: false
+    id_field: page_id
+    description: Facebook Page backing a Meta creative.
+  - name: Keyword
+    first_party: false
+    description: Google keyword / negative keyword criteria at campaign, ad-group and account level.
+    platforms: [google]
+  - name: Audience
+    first_party: false
+    id_field: audience_ids
+    description: USER_LIST / USER_INTEREST / CUSTOM_AUDIENCE targeting criteria, includable and excludable.
+  - name: Catalog
+    first_party: false
+    id_field: catalog_id
+    reference_count: 12
+    description: Product catalog / commerce feed backing shopping and dynamic ads.
+    relationships:
+      - has_many: ProductFeed
+        via: product_feed_id
+  - name: Pixel
+    first_party: false
+    id_field: pixel_id
+    aliases: [dataset_id]
+    description: Conversion measurement dataset. Soku Pixel + server-side CAPI is the documented ChatGPT Ads path.
+  - name: ConversionAction
+    first_party: false
+    id_field: conversion_action_id
+    description: >-
+      Individual platform conversion. Soku groups these into a first-party
+      "conversion group" reporting taxonomy so Meta and Google are comparable
+      side by side.
+  - name: BusinessCenter
+    first_party: false
+    id_field: bc_id
+    reference_count: 12
+    platforms: [tiktok]
+  - name: AnalyticsProperty
+    first_party: false
+    id_field: property_id
+    reference_count: 8
+    description: GA4 property.
+    namespace: ga4
+  - name: AnalyticsProject
+    first_party: false
+    id_field: project_id
+    reference_count: 16
+    description: PostHog / BigQuery / Adjust / AppsFlyer project or account scope.
+  - name: Store
+    first_party: false
+    id_field: store_id
+    aliases: [store_ids]
+    description: Commerce/delivery storefront (Shopify, Shoplazza, DoorDash, UberEats, Toast).
+  - name: SeoPage
+    first_party: true
+    description: >-
+      File-based SEO page (index.html + page.json) served from a connected custom
+      domain. Draft via put_page, live via publish_page. Sections must be established
+      before authoring.
+    namespace: seo_hosting
+    relationships:
+      - belongs_to: Brand
+      - belongs_to: Section
+  - name: Section
+    first_party: true
+    description: First URL path segment an SEO page can live under; the brand's section catalog.
+  - name: Chat
+    first_party: true
+    id_field: chat_id
+    reference_count: 11
+    description: The agent conversation the product is driven through.
+    relationships:
+      - belongs_to: Brand
+  - name: Skill
+    first_party: true
+    description: >-
+      Installable business skill (52 published in the Soku hub). Installed with a
+      `soku-` prefix; tracked locally in .soku-skills.json.
+    relationships:
+      - belongs_to: Brand
+
+id_field_frequency:
+  note: Count of registry actions accepting each id parameter — a proxy for entity centrality.
+  account_id: 176
+  campaign_id: 40
+  ad_group_id: 18
+  project_id: 16
+  bc_id: 12
+  catalog_id: 12
+  chat_id: 11
+  store_ids: 10
+  adset_id: 9
+  store_id: 9
+  property_id: 8
+  ad_id: 6
+  page_id: 6
+  creative_id: 6
+  adgroup_id: 5
+  conversion_action_id: 4
+  pixel_id: 4
+  dataset_id: 4
+  product_feed_id: 4
+  connection_id: 4

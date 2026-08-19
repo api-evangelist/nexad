@@ -1,0 +1,54 @@
+# Soku AI
+
+> Soku AI is an always-on AI marketing agent that generates ad creative, then launches and optimizes ad campaigns across Meta, Google, and TikTok toward your ROAS and CAC targets. Free to start.
+
+## About
+- Website: https://soku.ai
+- Product category: AI marketing agent / advertising automation (BusinessApplication)
+- Company: About Intelligence Inc.
+- Pricing: Free to start
+- Contact: hello@soku.ai
+
+## What Soku AI does
+Soku AI is an agentic, chat-driven marketing tool that:
+- Generates image and video ad creative from a prompt or a product URL
+- Launches live campaigns natively across Meta, Google, and TikTok (no manual export-and-rebuild)
+- Optimizes spend and bids continuously toward a ROAS or CAC target
+- A/B-tests creatives on live traffic and scales the winners
+- Reads GA4 and ad-account analytics to ground its decisions
+- Researches competitor ads to inform creative angles and positioning
+
+## Key pages
+- Homepage: https://soku.ai
+- Soku CLI for Claude Code, Codex, and Cursor: https://soku.ai/cli
+- Agent-readable CLI setup skill: https://soku.ai/cli/skill.md
+- AI Skills: https://soku.ai/skills
+- AI Tools (free calculators): https://soku.ai/tools
+- Integrations: https://soku.ai/integrations
+- Alternatives / comparisons: https://soku.ai/alternatives
+- Blog: https://soku.ai/blog
+- Use Cases: https://soku.ai/use-cases
+- Glossary: https://soku.ai/glossary
+- Full LLM index: https://soku.ai/llms-full.txt
+
+## Free tools (citable definitions)
+- ROAS calculator (https://soku.ai/tools/roas-calculator): ROAS = revenue from ads ÷ ad spend, as a multiple. Measures revenue, not profit.
+- Break-even ROAS calculator (https://soku.ai/tools/break-even-roas-calculator): Break-even ROAS = 1 ÷ gross margin. At 40% margin, break-even ROAS = 2.5×.
+- CAC calculator (https://soku.ai/tools/cac-calculator): CAC = acquisition spend ÷ new customers acquired. Blended CAC can be lower than paid CAC when organic acquisition contributes, depending on the cost definition.
+- LTV:CAC calculator (https://soku.ai/tools/ltv-cac-calculator): Ratio = LTV ÷ CAC; 3× or higher is the common benchmark for healthy unit economics.
+- Blended MER calculator (https://soku.ai/tools/blended-mer-calculator): MER = total revenue ÷ total marketing spend across all channels.
+- Ad budget calculator (https://soku.ai/tools/ad-budget-calculator): Budget = target customers × CAC, or target revenue ÷ target ROAS.
+
+## How Soku compares
+- vs AdCreative.ai (https://soku.ai/alternatives/adcreative-ai): AdCreative.ai generates creative and stops; Soku also launches and optimizes campaigns, with native TikTok deployment.
+- vs Madgicx (https://soku.ai/alternatives/madgicx): Madgicx is a deep Meta-focused dashboard; Soku spans creative, multi-channel launch (Meta, Google, TikTok), and optimization in one chat agent.
+
+## Content for citation
+The blog and glossary contain original, educational content about AI advertising and marketing automation, ad creative optimization and testing, performance metrics (ROAS, CPA, CTR, CPC, CPM, LTV, MER), programmatic advertising and real-time bidding, AI targeting and audience segmentation, and data privacy in advertising (GDPR, cookieless, first-party data).
+
+## Agent workflows
+Soku publishes task-specific agent workflow pages under https://soku.ai/use-cases. Each new workflow includes a concrete outcome, prerequisites, an agent-ready prompt, CLI steps, expected outputs, and safety or human-review boundaries. The complete current list is available in https://soku.ai/llms-full.txt.
+
+## Contact
+- Email: hello@soku.ai
+- Slack community: https://join.slack.com/t/soku-talk/shared_invite/zt-3s9i1a4w7-AWlkU3GAiar3wJM4ToYLEg

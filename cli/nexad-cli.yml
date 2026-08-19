@@ -1,14 +1,37 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
-source: https://soku.ai/cli
+source:
+  - https://soku.ai/cli
+  - https://github.com/About-Intelligence/soku-cli
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/SKILL.md
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/src/generated/capabilities.json
 skill_source: https://soku.ai/cli/skill.md
+capability_registry: cli/nexad-capabilities.json
 name: Soku CLI
 binary: soku
+package: '@soku-ai/cli'
+version: 0.1.0-alpha.17
+license: MIT
+repository: https://github.com/About-Intelligence/soku-cli
 summary: >-
   Soku CLI gives shell-based AI agents (Claude Code, Codex, Cursor) trusted
   marketing data, focused Soku skills, covered third-party APIs via server-side
-  egress, and review-gated write actions. Device-login auth; workspace/brand
-  selection is remote (not inferred from the local folder).
+  egress, and review-gated write actions. It talks to Soku over /api/cli/*; no MCP
+  host is required. Device-login auth; workspace/brand selection is remote and is
+  explicitly NOT inferred from the local folder.
+notes: >-
+  Upgraded 2026-08-13. Nexad publishes no OpenAPI, so the CLI is not merely a
+  convenience wrapper — it IS the documented contract for the Soku platform, and
+  the machine-readable form of that contract is the capability registry the
+  package ships at src/generated/capabilities.json. That file is saved verbatim in
+  this repo as cli/nexad-capabilities.json and is the single richest artifact
+  available for this provider: 281 actions across 18 namespaces, each with a
+  description, a long_description, typed input_params (name/type/required/
+  description/example), a declared output_shape, a read|write|risk mode, a
+  requires_review flag, a synced|realtime freshness kind and a platform list.
+  A live unauthenticated GET of https://api.soku.ai/api/cli/capabilities returns
+  401 missing_bearer, confirming the registry is served by a real endpoint rather
+  than existing only as a build artifact.
 prerequisites:
   - Node.js 20 or newer
   - npm
@@ -17,40 +40,137 @@ install:
     command: npm i -g @soku-ai/cli
 authentication:
   scheme: oauth-device-flow
+  standard: RFC 8628
   commands:
     - soku auth login
     - soku auth login --no-wait
     - soku auth login --device-code <device_code>
-  notes: >-
-    Token stored in ~/.soku/credentials.json (mode 0600). For shell/container
-    agents prefix login with SOKU_NO_KEYCHAIN=1 to avoid OS-keychain waits.
+    - soku auth status
+    - soku auth logout
+  token_storage: OS keychain via keytar when available, otherwise ~/.soku/credentials.json (mode 0600)
+  env: SOKU_TOKEN (preferred for CI and headless agents); SOKU_NO_KEYCHAIN=1 to bypass keychain waits
+  authorization_model: >-
+    No scope or resource model — the provider states a default login reaches the
+    entire CLI surface. Authorization is enforced at runtime by the human review
+    gate, not by token scope.
+capability_surface:
+  total_actions: 281
+  namespaces: 18
+  modes: {read: 149, write: 74, risk: 58}
+  review_gated: 124
+  freshness: {synced: 165, realtime: 116}
+  naming:
+    typed_commands: kebab-case
+    registry_actions: snake_case
+    action_id_form: 'action:<namespace>/<action>'
+  namespaces_detail:
+    - {namespace: ads, actions: 189, read: 76, write: 66, risk: 47, review_gated: 113, platforms: [google, meta, tiktok, chatgpt_ads, linkedin]}
+    - {namespace: seo_hosting, actions: 11, read: 3, write: 8, risk: 0, review_gated: 0}
+    - {namespace: ga4, actions: 10, read: 10, write: 0, risk: 0, review_gated: 0}
+    - {namespace: composio, actions: 8, read: 3, write: 0, risk: 5, review_gated: 5}
+    - {namespace: doordash, actions: 8, read: 8, write: 0, risk: 0, review_gated: 0}
+    - {namespace: gsc, actions: 7, read: 7, write: 0, risk: 0, review_gated: 0}
+    - {namespace: toast, actions: 6, read: 6, write: 0, risk: 0, review_gated: 0}
+    - {namespace: ubereats, actions: 6, read: 6, write: 0, risk: 0, review_gated: 0}
+    - {namespace: shoplazza, actions: 5, read: 5, write: 0, risk: 0, review_gated: 0}
+    - {namespace: adjust, actions: 4, read: 3, write: 0, risk: 1, review_gated: 1}
+    - {namespace: appsflyer, actions: 4, read: 3, write: 0, risk: 1, review_gated: 1}
+    - {namespace: bigquery, actions: 4, read: 3, write: 0, risk: 1, review_gated: 1}
+    - {namespace: org, actions: 4, read: 4, write: 0, risk: 0, review_gated: 0}
+    - {namespace: posthog, actions: 4, read: 3, write: 0, risk: 1, review_gated: 1}
+    - {namespace: stripe, actions: 4, read: 3, write: 0, risk: 1, review_gated: 1}
+    - {namespace: integration, actions: 3, read: 2, write: 0, risk: 1, review_gated: 1, note: BYO MCP packages through Gateway}
+    - {namespace: sprout, actions: 3, read: 3, write: 0, risk: 0, review_gated: 0}
+    - {namespace: shopify, actions: 1, read: 1, write: 0, risk: 0, review_gated: 0}
 command_groups:
   - group: update
-    commands: [soku --version, soku update status]
+    commands: [soku --version, soku update status, soku update cli, soku update skills]
+    notes: >-
+      `soku update cli` can silently refresh an installed meta skill as an npm
+      postinstall side effect; its JSON result carries mustRereadMetaSkill:true and
+      metaSkillRefreshed:[paths] when it did, and an agent is instructed to re-read
+      the skill before continuing.
   - group: auth
-    commands: [soku auth login]
+    commands: [soku auth login, soku auth status, soku auth logout]
   - group: workspace
     commands: [soku workspace status, soku workspace resolve <brand>, soku workspace use-brand <brand>]
+    notes: Never infer the Soku org/brand from the local repo directory.
   - group: skill
-    commands: [soku skill list, soku skill install <skill-slug> --global, soku skill status --global, soku skill list-installed --global]
-    notes: Installed business skills appear with a `soku-` prefix in agent skill autocomplete.
-  - group: ads
-    commands: [soku ads --help]
-    notes: Google and Meta reporting; mutations are review-gated (create a pending review a human approves).
+    commands: [soku skill list, soku skill install <slug> --global, soku skill status --global, soku skill list-installed --global]
+    notes: Installed business skills carry a `soku-` prefix (e.g. soku-ads-report); tracked in .soku-skills.json.
+  - group: ads (read)
+    commands:
+      - soku ads list-ad-accounts --platform google|meta|tiktok|chatgpt_ads
+      - soku ads list-dimensions
+      - soku ads query-single-dimension
+      - soku ads query-multi-dimension
+      - soku ads get-google-ads-report --report-type account|campaign|ad|keyword|search_term|bidding_strategy
+      - soku ads get-resource-metadata
+      - soku ads gaql-search
+    notes: >-
+      Cached-first. Use query-single-dimension for CPA/ROAS/conversion fan-out;
+      query-multi-dimension for raw breakdowns (not supported for chatgpt_ads).
+      gaql-search takes structured dimensions/metrics/filters — never raw
+      SELECT..FROM GAQL.
+  - group: ads (write)
+    commands:
+      - soku ads meta campaign|adset|creative|ad create|activate|pause|bulk-create
+      - soku ads meta asset upload-images
+      - soku ads meta account pages|instagram
+      - soku ads google campaign|ad-group|ad|keyword
+      - soku ads chatgpt account|campaign|ad-group|ad
+      - soku ads chatgpt campaign migrate-legacy
+    notes: >-
+      Most delivery-changing writes are review-gated and require --summary.
+      Creates are forced PAUSED by the backend; activation is a separate
+      review-gated action. Bulk items each need a unique client_ref.
   - group: analytics
-    commands: [soku ga4 --help, soku gsc --help, soku posthog --help]
-    notes: GA4 site analytics, Google Search Console, PostHog product analytics.
+    commands: [soku ga4 --help, soku gsc --help, soku posthog --help, soku bigquery --help]
+    notes: GA4 (10 actions), Google Search Console (7), PostHog (4, read-allowlisted tools), BigQuery (4, dry_run byte estimate available).
+  - group: commerce
+    commands: [soku shopify --help, soku shoplazza --help, soku doordash --help, soku ubereats --help, soku toast --help]
+    notes: Read-only commerce/delivery connectors.
+  - group: attribution
+    commands: [soku adjust --help, soku appsflyer --help, soku sprout --help]
+    notes: Mobile attribution (Adjust, AppsFlyer) and social (Sprout Social); reads allowlisted, changes via request_change.
   - group: egress
     commands: [soku egress providers, 'soku egress -- curl ...']
-    notes: Covered third-party APIs with credentials injected server-side.
+    notes: >-
+      Covered third-party APIs with credentials injected server-side. A successful
+      upstream response is returned VERBATIM on stdout, not wrapped in the CLI
+      envelope. An unset local key env var is expected — never guard on it.
   - group: seo-hosting
-    commands: [soku seo-hosting status]
-    notes: Inspect, author, and publish pages; direct-write surface requiring explicit confirmation. Use --cf-token-env / --cf-token-stdin for Cloudflare tokens.
+    commands: [soku seo-hosting status, put-page, publish-page, unpublish-page, delete-page, get-sections, put-sections, upload-asset, set-domain-sections, reprovision-domain]
+    notes: >-
+      Direct-write surface (11 actions, none review-gated) requiring explicit user
+      confirmation. Use --cf-token-env / --cf-token-stdin for Cloudflare tokens.
+  - group: org
+    commands: [soku org get-overview, get-usage-summary, list-activity, list-brands]
   - group: review
-    commands: [soku review approve <id>]
-    notes: Human-authorized approval of review-gated writes; must never be auto-approved.
+    commands: [soku review list, soku review show <id>, soku review approve <id>]
+    notes: >-
+      The human gate. Approval is single-use and a failed approval is terminal.
+      Never allowlist or auto-approve. Bulk reviews execute asynchronously — poll
+      with `soku review show`.
+  - group: raw
+    commands: ['soku call <namespace> <action> -p k=v', 'soku call <ns> <action> --payload ''{...}''']
+    notes: Forward-compatible escape hatch for actions with no typed command. Review-gated writes via `soku call` still require --summary.
+exit_codes:
+  0: Success
+  1: Usage error or no workspace
+  2: Auth missing, expired or revoked
+  4: Not found or unknown capability
+  5: Runtime or network failure
+output:
+  non_tty_success: '{"ok": true, "data": ...}'
+  non_tty_error: '{"ok": false, "error": ...}'
 key_flows:
-  - Install/update CLI -> device login -> select remote workspace/brand -> install task-scoped skills -> verify surfaces -> run read-only performance health check.
+  - Install/update CLI -> device login -> select remote workspace/brand -> install task-scoped skills -> discover namespaces -> run a read-only performance health check.
+  - Discover -> inspect (`--help` is the authoritative runtime surface) -> run. Never guess flags; object/list flags take JSON strings.
+  - Meta ad build: list-ad-accounts -> upload-images (immediate, returns image_hash) -> campaign create -> adset create -> creative create -> ad create, each write returning a review id for human approval.
 safety:
-  - Never prints Soku tokens or asks the user to paste provider keys.
+  - Never prints or persists the Soku access token.
+  - Never asks the user to paste third-party provider keys for covered providers.
   - Ads writes are review-gated; SEO Hosting is a direct-write surface requiring confirmation.
+  - Pass user-provided values as separate argv elements; never string-concatenate into a shell command.
+  - Treat verification_uri, signed URLs, review ids and provider URLs as opaque strings.

@@ -1,15 +1,24 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
 source:
   - https://docs.nex.ad/docs/android/getting-started
   - https://soku.ai/cli/skill.md
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/auth-workspace.md
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/egress-security.md
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/SECURITY.md
+  - https://api.soku.ai/api/cli/capabilities
 notes: >-
   Nexad has no published OpenAPI, so this profile is searched from provider docs
-  rather than derived. Two distinct products with distinct auth models.
+  and live probes rather than derived from securitySchemes. Two distinct products
+  with two distinct auth models. Upgraded 2026-08-13 with the token-storage,
+  rotation and third-party credential model published in the company's own repo,
+  and with the observed 401 challenge shapes.
 summary:
   types: [apiKey, oauth2]
   api_key_in: [sdk-config]
   oauth2_flows: [deviceCode]
+  scopes_published: false
+  authorization_model: human-review-gate
 schemes:
   - name: nexad-android-sdk
     product: Nexad Android Ads SDK
@@ -17,19 +26,68 @@ schemes:
     credentials:
       - App ID
       - Publisher ID
+    in: sdk-config
     provisioning: >-
       Credentials are issued after submitting the Nexad contact form; the team
       returns a unique App ID and Publisher ID passed to NexadSDK.initialize().
+      There is no self-serve key issuance for the SDK.
     source: https://docs.nex.ad/docs/android/getting-started
   - name: soku-nexstudio-api
     product: Soku (NexStudio) API
     type: oauth2
     flow: deviceCode
+    standard: OAuth 2.0 Device Authorization Grant (RFC 8628)
     endpoint: https://api.soku.ai
+    token_type: Bearer
     detail: >-
       The Soku CLI authenticates via an OAuth device-login flow (`soku auth
-      login`), issuing a bearer token stored locally (mode 0600). Direct calls
-      to api.soku.ai/v1 and api.soku.ai/mcp return HTTP 401 without a token.
-      Third-party provider credentials are injected server-side via `soku egress`
+      login`), returning a verification_uri and a user_code and resumable with
+      `--device-code <device_code>`. Direct calls to api.soku.ai/v1,
+      api.soku.ai/api/cli and api.soku.ai/mcp return HTTP 401 without a token.
+      Third-party provider credentials are injected SERVER-SIDE via `soku egress`
       rather than handled by the user.
     source: https://soku.ai/cli/skill.md
+    token_storage:
+      primary: OS keychain via keytar (optional dependency)
+      fallback: file-backed store at ~/.soku/credentials.json, mode 0600
+      bypass: SOKU_NO_KEYCHAIN=1 (recommended for shell/container agents to avoid an indefinite keychain/D-Bus wait)
+      env_injection: SOKU_TOKEN (the provider's preferred path for CI and headless agents)
+    rotation:
+      procedure: soku auth logout then soku auth login
+      guidance: Published in SECURITY.md — rotate immediately if a token may have been exposed.
+    scopes:
+      published: false
+      statement: >-
+        Quoted from the provider's own reference doc: "A default `soku auth login`
+        reaches the entire CLI surface — there is no resource model to grant or
+        check." A token is therefore all-or-nothing across 281 actions. No
+        scopes/ artifact is emitted for this provider because there is no scope
+        surface to capture.
+    authorization:
+      mechanism: human review gate
+      detail: >-
+        Least-privilege is enforced at EXECUTION time rather than at token-issue
+        time. 124 of 281 published actions carry requires_review=true and create a
+        pending review that a human must approve before the write executes. This is
+        an unusual and, for an agent-facing API, a defensible substitute for
+        scopes — but it does mean a leaked token grants full read access to every
+        connected ad and analytics account immediately.
+      see: agentic-access/nexad-agentic-access.yml
+    observed_challenges:
+      checked: '2026-08-13'
+      probes:
+        - {url: 'https://api.soku.ai/v1', status: 401, body: '{"success":false,"data":null,"error":{"code":"unauthorized","message":"Invalid or expired token","details":null},"meta":null}'}
+        - {url: 'https://api.soku.ai/api/cli/capabilities', status: 401, body: '{"error":"missing_bearer","message":"missing_bearer"}'}
+        - {url: 'https://api.soku.ai/mcp', status: 401, note: 'tools/list JSON-RPC POST; no WWW-Authenticate header returned'}
+third_party_credentials:
+  model: server-side injection
+  detail: >-
+    For covered third-party APIs the caller never holds the key. `soku egress --
+    curl ...` strips empty placeholder auth and Soku injects the real credential
+    server-side. `soku egress providers` lists covered hosts. The provider
+    explicitly instructs agents NOT to preflight or guard on a local key env var.
+  source: https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/egress-security.md
+discovery_gaps:
+  - {document: /.well-known/openid-configuration, status: 404-or-401, impact: No OIDC discovery.}
+  - {document: /.well-known/oauth-authorization-server, status: 404-or-401, impact: 'No RFC 8414 metadata; device/token endpoints are undiscoverable outside the CLI.'}
+  - {document: /.well-known/oauth-protected-resource, status: 401, impact: 'No RFC 9728 metadata, so an MCP client cannot discover how to authorize against /mcp.'}

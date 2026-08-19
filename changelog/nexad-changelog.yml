@@ -1,22 +1,102 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
 source: https://soku.ai/changelog
 product: Soku AI
 scheme: dated
+cadence: near-daily
+current_release: v4.61.0
 notes: >-
-  Soku publishes a dated product changelog. Recent window captured verbatim from
-  the public changelog; the live page is the source of truth for full history.
+  Soku publishes a dated, prose product changelog with no version numbers attached
+  to entries; the API build version is reported separately at
+  https://api.soku.ai/ (v4.61.0 as of 2026-08-13, up from v4.34.1 at the previous
+  enrichment pass on 2026-07-20). Release cadence is near-daily. Recent window
+  captured below; the live page is the source of truth for full history. No entry
+  in the captured window is marked breaking.
 entries:
+  - date: '2026-08-12'
+    title: Creatives Canvas, Sidebar Navigation, Organization Chat View
+    area: Product surface and integrations
+    breaking: false
+    highlights:
+      - New Creatives tool for deconstructing and reassembling winning ads with generation nodes.
+      - Navigation rail converted to a labeled sidebar.
+      - Organization admins gain an "All chats" view across brands.
+      - Toast POS integration with custom credentials.
+      - Ads queries now support reach and frequency metrics.
+  - date: '2026-08-11'
+    title: Chat Naming Speed, Billing Settlement, Concurrent Chat Isolation
+    area: Billing and reliability
+    breaking: false
+    highlights:
+      - New chat titles appear within ~2 seconds instead of at turn completion.
+      - Billing now settles once, completely, per turn against actual provider calls.
+      - Concurrent chats properly separated to prevent API attribution errors.
+      - Shoplazza integration made visible to all workspaces.
+  - date: '2026-08-10'
+    title: BigQuery First-Class Integration, API Reliability, Video Turn Fixes
+    area: Integrations and API reliability
+    breaking: false
+    highlights:
+      - BigQuery supports service-account JSON or OAuth connection modes.
+      - API reliability improved by moving blocking calls off the main loop.
+      - Long video turns now complete properly.
+      - ChatGPT Ads targeting expanded to Brazil, Mexico and India.
+  - date: '2026-08-06'
+    title: Meta Outage Resilience, Conversion Reporting, Shoplazza Integration
+    area: Resilience and reporting
+    breaking: false
+    highlights:
+      - Meta transient faults now retried automatically.
+      - Conversion reporting stops rebuilding duplicate work.
+      - Shoplazza joins the e-commerce integrations.
+      - Broken images on public pages fixed via a CDN migration.
+  - date: '2026-08-05'
+    title: Shared Conversation Replay, Sprout Social Integration, Brand Access Exclusions
+    area: Access model and integrations
+    breaking: false
+    highlights:
+      - Public share links can be replayed like recordings.
+      - Sprout Social available as a read-only integration.
+      - Brand access model shifted to explicit per-person exclusions.
+      - Ad changes validated before entering the approval queue.
+      - Cookie banner now gates optional tags.
+  - date: '2026-08-04'
+    title: Chat Plan Visibility, Long Conversation Virtualization, Organization Composer
+    area: Agent UX and CLI
+    breaking: false
+    highlights:
+      - Chat displays the working plan as a card with progress.
+      - Transcript virtualization prevents tab crashes on long conversations.
+      - SerpAPI and Jina Reader added as built-in integrations.
+      - ChatGPT Ads CLI implemented.
+  - date: '2026-08-03'
+    title: Organization Chat Screen, Platform Automation Audit, Cross-Brand Slack
+    area: Governance and automation
+    breaking: false
+    highlights:
+      - Dedicated organization-level conversation screen with a brand focus selector.
+      - Platform automation now proves what it changed on all four ad platforms.
+      - Slack connections work across an entire organization.
+      - ChatGPT Ads ads require stable names confirmed by platform read-back.
+  - date: '2026-07-30'
+    title: Organization Chat Launch, Ad Creative in Approvals, Partner Branding
+    area: Organization scope and approvals
+    breaking: false
+    highlights:
+      - Organization-level conversations span the entire portfolio with read-only brand access.
+      - Approval cards display actual ad creative previews.
+      - Partners can put their own brand on Soku via custom signup pages.
+      - Usage pages rebuilt to attribute cost by brand and conversation.
   - date: '2026-07-19'
     title: More reliable daily ad data sync
     area: Reporting and sync reliability
     breaking: false
     highlights:
-      - Restored complete daily ad data sync after a regression that could leave campaign, ad set, and ad metrics frozen for some accounts.
-      - Hardened Meta data pulls to automatically request smaller pages when the platform rejects an oversized response, so large accounts sync through instead of stalling.
+      - Restored complete daily ad data sync after a regression that could leave campaign, ad set and ad metrics frozen for some accounts.
+      - Hardened Meta data pulls to automatically request smaller pages when the platform rejects an oversized response.
   - date: '2026-07-16'
-    title: Credit packs with affiliate attribution, redemption-code plans, Slack and Shoplazza connectors, faster account connect, and chat reliability fixes
-    area: Billing, plans, and affiliates
+    title: Credit packs with affiliate attribution, redemption-code plans, Slack and Shoplazza connectors
+    area: Billing, plans and affiliates
     breaking: false
     highlights:
       - Added credit pack purchases with affiliate attribution.

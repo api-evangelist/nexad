@@ -1,0 +1,177 @@
+generated: '2026-08-13'
+method: searched
+source:
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/SKILL.md
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/capability-flow.md
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/egress-security.md
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/ads-write.md
+  - cli/nexad-capabilities.json
+  - https://api.soku.ai/v1
+product: Soku (NexStudio) API
+notes: >-
+  Cross-cutting runtime semantics for the Soku platform, read from the provider's
+  own published CLI skill + reference docs (MIT, in About-Intelligence/soku-cli),
+  from the 281-action capability registry that repo ships, and from live
+  unauthenticated responses off api.soku.ai. Nexad publishes no OpenAPI, so these
+  are the closest thing to a machine-readable contract the provider ships — and
+  they are unusually explicit for an API with no spec.
+
+api_style:
+  protocol: HTTPS JSON
+  base: https://api.soku.ai
+  cli_path: /api/cli/*
+  detail: >-
+    The published skill states the CLI "talks to Soku over /api/cli/*; no MCP host
+    is required". A separate authenticated MCP endpoint exists at
+    https://api.soku.ai/mcp. /api/cli/capabilities answers 401 missing_bearer
+    unauthenticated, confirming the capability registry is a live endpoint and not
+    only a build artifact.
+
+authentication:
+  style: bearer
+  scheme: OAuth 2.0 Device Authorization Grant (RFC 8628)
+  header: 'Authorization: Bearer <token>'
+  env_var: SOKU_TOKEN
+  detail: >-
+    Device login via `soku auth login`. Token stored in the OS keychain via keytar
+    when available, otherwise a file-backed store at ~/.soku/credentials.json
+    (mode 0600). SOKU_NO_KEYCHAIN=1 forces the file store for headless agents.
+    SOKU_TOKEN is the preferred injection path for CI. There is no resource/scope
+    model: the provider's own docs state "a default `soku auth login` reaches the
+    entire CLI surface — there is no resource model to grant or check".
+  see: authentication/nexad-authentication.yml
+
+envelope:
+  http_success: '{"success": true, "data": ..., "error": null, "meta": ...}'
+  http_error: '{"success": false, "data": null, "error": {"code": "...", "message": "...", "details": ...}, "meta": null}'
+  cli_non_tty_success: '{"ok": true, "data": ...}'
+  cli_non_tty_error: '{"ok": false, "error": ...}'
+  detail: >-
+    Two distinct envelopes are published. The HTTP API uses a
+    success/data/error/meta envelope (observed verbatim on live 401 responses from
+    api.soku.ai). The CLI, in non-TTY contexts, emits an ok/data|error envelope.
+    Egress responses are the documented exception - a successful upstream
+    third-party response is returned verbatim on stdout and is NOT wrapped.
+  error_format: proprietary JSON envelope
+  rfc9457: false
+  see: errors/nexad-error-codes.yml
+
+idempotency:
+  supported: false
+  detail: >-
+    Recorded as ABSENT on the provider's own statement, not as an unchecked field.
+    The capability registry says plainly of every bulk create action: "No
+    resume/idempotency in v1; use client_ref to map outputs and build a new retry
+    file for failed items." `client_ref` is a caller-supplied correlation label for
+    matching bulk inputs to outputs — it does not deduplicate a resubmission. The
+    one true idempotency key in the surface is `request_id` on
+    ads/create_campaign and ads/create_smart_plus_campaign, and the registry states
+    it is TikTok-only, passed through for PROVIDER-SIDE (TikTok) idempotency rather
+    than enforced by Soku. Individual actions are annotated where they are
+    naturally idempotent (e.g. ads/clear_conversion_group_manual_campaign) and
+    where they are explicitly not (ads/apply_campaign_label errors on re-apply).
+    Retry guidance in the registry is therefore "query by client_ref/name before
+    retrying; do not automatically resubmit".
+  correlation_key: client_ref
+  upstream_passthrough_key: request_id (TikTok only)
+
+human_review_gate:
+  supported: true
+  detail: >-
+    The platform's defining runtime convention. A delivery-changing write does not
+    execute on call; it creates a PENDING REVIEW and returns a review_id. A human
+    must approve before it runs. 124 of 281 published actions (44%) carry
+    requires_review=true in the registry.
+  request_field: '--summary (required on every review-gated write, including raw `soku call`)'
+  response_field: review_id
+  poll: soku review show <review_id>
+  approve: soku review approve <review_id>
+  properties:
+    - Approval is single-use.
+    - A failed approval is terminal; a retry needs a freshly created review.
+    - Bulk reviews execute ASYNCHRONOUSLY after approval and must be polled.
+    - Creates default to PAUSED server-side; activation is a separate review-gated action.
+  agent_rule: >-
+    The provider instructs agents never to allowlist or auto-approve
+    `soku review approve`; self-approval is permitted only when the agent harness
+    itself prompts a human for explicit per-command confirmation.
+
+pagination:
+  style: cursor
+  detail: >-
+    Cursor pagination appears on roughly 25 of the 281 actions and is largely a
+    faithful pass-through of the upstream ad platform's paging (Meta in
+    particular). There is no single platform-wide pagination contract.
+  params:
+    - name: after
+      description: Pagination cursor from a prior response's paging block (Meta-sourced actions).
+    - name: limit
+      description: Page size.
+    - name: next_after_id
+      description: Stable continuation cursor on ads/audit_ad_automation_inventory.
+  response_fields: [has_more, paging, next_after_id]
+
+request_tracing:
+  supported: true
+  detail: >-
+    Every api.soku.ai response carries a correlation pair, observed live on
+    unauthenticated 401s. This is a real runtime signal an agent can log and quote
+    back in a support request.
+  response_headers:
+    - x-nex-trace-id
+    - x-nex-request-id
+  probe:
+    url: https://api.soku.ai/v1
+    status: 401
+    checked: '2026-08-13'
+
+naming:
+  typed_cli_commands: kebab-case (soku ads query-single-dimension)
+  registry_action_names: snake_case (soku call ads query_single_dimension)
+  action_ids: 'action:<namespace>/<action>'
+  detail: >-
+    Two naming conventions coexist by design. The typed CLI surface is kebab-case;
+    the underlying registry action names, used by the raw `soku call` escape hatch
+    and by the capability registry, are snake_case. The registry id form is
+    action:<namespace>/<action>.
+
+freshness:
+  declared: true
+  detail: >-
+    Every action declares a freshness_kind, an uncommon and genuinely useful
+    convention: `synced` (served from Soku's cached analytics pipeline, 165
+    actions) or `realtime` (live pass-through to the upstream provider, 116
+    actions). The published guidance is cached-first — use synced actions for
+    normal reporting and fall back to realtime/GAQL only when a cached action
+    cannot answer the question.
+  values: [synced, realtime]
+
+versioning:
+  scheme: uri-path
+  current: v1
+  release: v4.61.0
+  detail: >-
+    https://api.soku.ai/ returns {"message":"Welcome to NexStudio API","version":"v4.61.0"}
+    while the callable paths are /v1 and /api/cli. The build version and the API
+    contract version are separate numbers.
+  see: lifecycle/nexad-lifecycle.yml
+
+rate_limiting:
+  caller_limits_published: false
+  detail: >-
+    No numeric limits and no rate-limit response headers. Consumption is metered in
+    credits against the plan, not requests per window.
+  see: rate-limits/nexad-rate-limits.yml
+
+credential_handling:
+  third_party: >-
+    Covered third-party APIs are called through `soku egress -- curl ...`; Soku
+    injects the provider credential SERVER-SIDE, so no third-party API key is
+    present on the caller's machine. An unset local key env var is expected and
+    must not be treated as an error. `soku egress providers` lists covered hosts.
+  rules:
+    - Never print or persist the Soku access token.
+    - Never ask a user to paste a third-party key for a covered provider.
+    - Pass user-supplied values as separate argv elements; never string-concatenate into a shell command.
+    - Use --cf-token-env / --cf-token-stdin instead of a literal token argv value.
+  source: https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/egress-security.md

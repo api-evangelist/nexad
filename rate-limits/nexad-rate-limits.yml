@@ -1,0 +1,42 @@
+generated: '2026-08-13'
+method: probed
+source:
+  - https://soku.ai/docs/faq
+  - https://api.soku.ai/v1
+  - https://api.soku.ai/api/cli/capabilities
+limit_count: 0
+notes: >-
+  Soku publishes NO numeric rate limits for its own API. This is a recorded
+  absence, not an unchecked field. Two things were checked and both came back
+  negative: (1) the public docs and FAQ describe rate control only in the
+  DOWNSTREAM direction — "API calls paced and throttled to stay well within each
+  platform's limits" for the connected Google/Meta/TikTok ad accounts — which is
+  a statement about how Soku calls the ad platforms, not a limit Soku publishes
+  for callers of api.soku.ai; (2) a live unauthenticated request to
+  https://api.soku.ai/v1 and https://api.soku.ai/api/cli/capabilities returned
+  no rate-limit response headers at all. What the API does return on every
+  response is a correlation pair (x-nex-trace-id, x-nex-request-id), captured in
+  conventions/nexad-conventions.yml. The practical consumption meter for this
+  platform is the credit allowance in plans/nexad-plans-pricing.yml, not a
+  requests-per-window limit.
+limits: []
+response_headers:
+  observed: []
+  rate_limit_headers_present: false
+  correlation_headers:
+    - x-nex-trace-id
+    - x-nex-request-id
+  probe:
+    url: https://api.soku.ai/v1
+    status: 401
+    checked: '2026-08-13'
+exhaustion_status_code: null
+retry_after_supported: false
+downstream_platform_pacing:
+  documented: true
+  source: https://soku.ai/docs/faq
+  quote: >-
+    Connecting ad accounts through official Marketing APIs uses built-in rate
+    control, with API calls paced and throttled to stay well within each
+    platform's limits.
+  applies_to: Soku's outbound calls to Google, Meta, TikTok and ChatGPT Ads

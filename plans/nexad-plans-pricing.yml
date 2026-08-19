@@ -1,0 +1,75 @@
+generated: '2026-08-13'
+method: searched
+source: https://soku.ai/pricing
+product: Soku AI
+currency: USD
+billing_model: credit-based subscription
+plan_count: 4
+notes: >-
+  Soku AI publishes a public, self-serve pricing page with four tiers. Billing is
+  credit-metered: each plan includes an annual credit allowance and Starter/Pro
+  organization admins can buy one-time credit packs as overage. Values below are
+  quoted verbatim from the published pricing page. The Nexad Android Ads SDK is a
+  publisher-monetization product and does not publish a price list; only Soku AI
+  is priced publicly.
+plans:
+  - name: Free
+    price: 0
+    price_display: $0/month
+    period: month
+    included_credits: 2000
+    included_credits_display: 2,000 credits to start
+    limits:
+      organizations: Up to 10 organizations
+      brands: 1 brand per organization
+      members: 1 member per organization
+      ad_accounts: Up to 3 ad accounts per channel
+    excludes:
+      - Video generation (requires Starter)
+  - name: Starter
+    price: 39
+    price_display: $39/month
+    period: month
+    annual_price: 468
+    annual_price_display: $468/year (20% discount)
+    included_credits: 240000
+    included_credits_display: 240,000 credits / year
+    limits:
+      organizations: Up to 10 organizations
+      brands: Up to 5 brands per organization
+      members: Up to 5 members per organization
+      ad_accounts: Up to 10 ad accounts per channel
+  - name: Pro
+    price: 199
+    price_display: $199/month
+    period: month
+    annual_price: 2388
+    annual_price_display: $2388/year (20% discount)
+    recommended: true
+    included_credits: 2400000
+    included_credits_display: 2,400,000 credits / year
+    limits:
+      organizations: Up to 10 organizations
+      brands: Unlimited brands per organization
+      members: Unlimited members per organization
+      ad_accounts: Unlimited ad accounts per channel
+    includes:
+      - Priority support
+  - name: Enterprise
+    price: null
+    price_display: Custom / flexible contract
+    period: null
+    included_credits: null
+    included_credits_display: Unlimited credits
+    contact_sales: true
+    includes:
+      - SSO
+      - Security review
+      - Dedicated success manager
+overage:
+  model: one-time credit packs
+  price_per_1000_credits: 3
+  price_display: $3 per 1,000 credits
+  minimum_purchase_credits: 10000
+  maximum_purchase_credits: 100000
+  eligibility: Starter and Pro organization admins only

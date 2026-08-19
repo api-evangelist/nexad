@@ -1,0 +1,108 @@
+generated: '2026-08-13'
+method: searched
+source:
+  - https://api.soku.ai/v1
+  - https://api.soku.ai/api/cli/capabilities
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/SKILL.md
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/data-capabilities.md
+  - cli/nexad-capabilities.json
+product: Soku (NexStudio) API
+format: proprietary-json-envelope
+rfc9457: false
+notes: >-
+  Nexad/Soku publishes no consolidated error reference page, so this catalog is
+  assembled from three real sources rather than invented: the error envelope and
+  codes observed on LIVE unauthenticated responses from api.soku.ai; named error
+  codes documented in the provider's public CLI reference docs; and the process
+  exit-code table published in the provider's own agent skill (SKILL.md). It is
+  deliberately partial — an agent should treat error.code as an open string set.
+  Soku does NOT use RFC 9457 application/problem+json.
+
+envelope:
+  media_type: application/json
+  http:
+    shape: '{"success": bool, "data": any|null, "error": {"code": string, "message": string, "details": any|null}|null, "meta": any|null}'
+    code_field: error.code
+    message_field: error.message
+    details_field: error.details
+  cli_non_tty:
+    shape: '{"ok": bool, "data": any} | {"ok": false, "error": any}'
+  egress_exception: >-
+    A successful upstream third-party response routed through `soku egress` is
+    returned VERBATIM on stdout and is not wrapped in the envelope. Only
+    Soku-level failures use the envelope.
+
+errors:
+  - code: unauthorized
+    status: 401
+    message: Invalid or expired token
+    envelope: standard
+    surface: https://api.soku.ai/v1, /api/cli, /mcp, /.well-known/*
+    remediation: Re-run the device login (`soku auth login --no-wait`), or supply a valid SOKU_TOKEN.
+    evidence: observed live 2026-08-13 on an unauthenticated GET https://api.soku.ai/v1
+  - code: missing_bearer
+    status: 401
+    message: missing_bearer
+    envelope: 'flat: {"error": "missing_bearer", "message": "missing_bearer"}'
+    surface: https://api.soku.ai/api/cli/capabilities
+    remediation: Send an Authorization Bearer header.
+    note: >-
+      This endpoint returns a FLAT error shape rather than the standard
+      success/data/error/meta envelope — a real inconsistency in the surface, worth
+      knowing before writing a generic error parser.
+    evidence: observed live 2026-08-13
+  - code: Not Found
+    status: 404
+    message: Not Found
+    envelope: 'FastAPI default: {"detail": "Not Found"}'
+    surface: unrouted paths on api.soku.ai (e.g. /openapi.json, /docs, /redoc)
+    remediation: Check the path; the callable surfaces are /v1, /api/cli/* and /mcp.
+    evidence: observed live 2026-08-13
+  - code: field_metadata_unavailable
+    status: 400
+    message: Field metadata unavailable for this account
+    surface: ads/get_resource_metadata (Google)
+    cause: >-
+      The Google Ads account is connected through a proxy credential
+      (Pipedream / Composio) rather than a native Google credential.
+    remediation: >-
+      Skip field discovery and call ads/gaql-search directly.
+    evidence: https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/data-capabilities.md
+  - code: gaql_invalid_query
+    status: 400
+    message: Invalid GAQL query
+    surface: ads/gaql-search (Google)
+    cause: An unknown or unsupported field was referenced in the structured query.
+    remediation: The error names the offending field; remove or correct it and retry.
+    evidence: https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/references/data-capabilities.md
+
+exit_codes:
+  source: https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/SKILL.md
+  note: Published by the provider as the agent-facing failure contract for the CLI.
+  codes:
+    - exit: 0
+      meaning: Success
+      action: Parse `data`.
+    - exit: 1
+      meaning: Usage error, or no workspace selected
+      action: Fix arguments, or run `soku workspace status` / `soku workspace use-brand`.
+    - exit: 2
+      meaning: Auth missing, expired, or revoked
+      action: Run `soku auth login --no-wait`.
+    - exit: 4
+      meaning: Not found, or unknown capability
+      action: Re-check `soku --help` / `soku <namespace> --help`.
+    - exit: 5
+      meaning: Runtime or network failure
+      action: Retry if transient; set ALL_PROXY if behind a proxy.
+
+retry_semantics:
+  safe_to_retry: >-
+    Read actions (mode=read, 149 of 281) are safe to retry. Bulk creates are NOT —
+    the registry states there is no resume/idempotency in v1 and instructs callers
+    to query by client_ref/name before retrying rather than automatically
+    resubmitting.
+  review_gate: >-
+    A failed review approval is TERMINAL. A retry requires creating a fresh review;
+    the same review_id cannot be re-approved.
+  see: conventions/nexad-conventions.yml

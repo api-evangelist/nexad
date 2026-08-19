@@ -1,0 +1,4455 @@
+generated: '2026-08-13'
+method: derived
+source: cli/nexad-capabilities.json
+source_url: https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/src/generated/capabilities.json
+spec: x-agentic-access (Curity Access Intelligence vocabulary)
+audience: null
+notes: 'Unusually for this artifact, the execution contract is NOT inferred from HTTP verbs. Nexad/Soku
+  publishes its OWN per-action governance classification inside the CLI capability registry it ships in
+  its public MIT-licensed repository (About-Intelligence/soku-cli): every action carries a provider-set
+  `mode` (read | write | risk) and a provider-set `requires_review` boolean, and the platform enforces
+  the gate at runtime — a review-gated write creates a pending review and does not execute until a human
+  approves it. This file maps those PROVIDER-PUBLISHED fields onto the x-agentic-access vocabulary: mode=read
+  -> connected/read; mode=write without review -> acting/write; mode=write WITH review -> acting/physical
+  (these are the delivery- and spend-changing ad mutations); mode=risk -> acting/safety-critical. provider_mode
+  and provider_requires_review are retained verbatim on every row so the provider''s own claim survives
+  independently of our mapping. Token TTL ceilings, audit flags and proof-of-possession are the pipeline''s
+  recommendation, not a provider claim. 124 of 281 actions (44%) are human-in-the-loop by the provider''s
+  own declaration, which is a materially stronger agentic-governance posture than the catalog norm.'
+summary:
+  operations: 281
+  namespaces: 18
+  by_action_class:
+    connected: 149
+    acting: 132
+  by_consequence:
+    read: 149
+    safety-critical: 58
+    physical: 66
+    write: 8
+  human_in_the_loop_required: 124
+  provider_modes:
+    read: 149
+    risk: 58
+    write: 74
+  provider_review_gated: 124
+  by_namespace:
+    adjust: 4
+    ads: 189
+    appsflyer: 4
+    bigquery: 4
+    composio: 8
+    doordash: 8
+    ga4: 10
+    gsc: 7
+    integration: 3
+    org: 4
+    posthog: 4
+    seo_hosting: 11
+    shopify: 1
+    shoplazza: 5
+    sprout: 3
+    stripe: 4
+    toast: 6
+    ubereats: 6
+operations:
+- operation: action:adjust/list_accounts
+  namespace: adjust
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - adjust
+  summary: List the Adjust accounts this brand can query.
+- operation: action:adjust/list_tools
+  namespace: adjust
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - adjust
+  summary: List the Adjust attribution/analytics tools available for an account.
+- operation: action:adjust/query
+  namespace: adjust
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - adjust
+  summary: Run a read-only Adjust tool (aggregated performance, cohorts, events, SKAN, app metadata).
+- operation: action:adjust/request_change
+  namespace: adjust
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - adjust
+  summary: Request a non-allowlisted Adjust tool (or a future write) via human approval.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_account_negative_keywords
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Create or append to a Google account-level negative-keyword shared set (atomic); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_ad_group_negative_keywords
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Add negative keywords to a Google ad group (batch); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_audience_targeting
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Add an audience criterion to an ad group (ENABLED); supports USER_LIST, USER_INTEREST, CUSTOM_INTENT,
+    CUSTOM_AUDIENCE, COMBINED_AUDIENCE; review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_callouts
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Add Google callout assets to a campaign (batch, atomic); review-gated.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/add_campaign_ad_units
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: 'Deprecated legacy compatibility: Append ChatGPT Ads ad units to a campaign.'
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_campaign_audience_targeting
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Add an audience criterion to a campaign; supports USER_LIST, USER_INTEREST, CUSTOM_AUDIENCE,
+    COMBINED_AUDIENCE; review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_campaign_negative_keywords
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Add negative keywords to a Google campaign (batch); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_campaign_webpage_exclusion
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Exclude webpages (URL paths, page titles, content) from a Google campaign via negative WEBPAGE
+    criteria; review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_conversion_group_rule
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated add of a conversion_group rule.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/add_keywords
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Add keywords to a Google ad group (batch, ENABLED); review-gated, reversible per keyword.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/add_sitelinks
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Add Google sitelink assets to a campaign (batch, atomic); review-gated.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/add_structured_snippets
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Add a Google structured snippet asset to a campaign; review-gated, reversible.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/apply_ad_group_label
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Attach a Google label to an ad group; review-gated, reversible.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/apply_campaign_label
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Attach a Google label to a campaign; review-gated, reversible.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/apply_conversion_group_template
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated onboarding action that creates missing conversion groups and applies selected
+    rules/goals/manual campaigns from templates.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/apply_label
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Apply a Meta ad label (by NAME) to a campaign/adset/ad/creative; review-gated, reversible.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/archive_ad
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: Archive one authored ChatGPT Ads Ad; review-gated risk action.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/archive_ad_group
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: Archive one ChatGPT Ads Ad Group and its Ads; review-gated risk action.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/archive_ad_unit
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: 'Deprecated legacy compatibility: Toggle archive state for one ChatGPT Ads ad unit; review-gated
+    risk action.'
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/archive_lead_form
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Archive a Meta lead form (status=ARCHIVED); review-gated. Meta has no lead-form delete; collected
+    leads remain readable.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/audit_ad_automation_inventory
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Read-only paginated TikTok, Google, Meta, or ChatGPT Ads audit of every automation baseline
+    currently tracked for one brand-scoped ad account.
+- operation: action:ads/audit_creative_automation
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - google
+  - meta
+  summary: 'Read-only drift audit: compare a Meta creative''s or Google campaign''s live AI-automation
+    settings against the approved intent baseline.'
+- operation: action:ads/bind_conversion_group_goal
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated link of a platform conversion goal to a conversion group.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/bulk_create_ad_creatives
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Bulk-create Meta ad creatives in one review-gated request; executes items sequentially.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/bulk_create_ads
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Bulk-create Meta ads in one review-gated request; executes items sequentially. Also supports
+    TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/bulk_create_adsets
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Bulk-create Meta ad sets in one review-gated request; executes items sequentially. Also supports
+    TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/bulk_create_campaigns
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Bulk-create Meta campaigns in one review-gated request; executes items sequentially. Also supports
+    TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/clear_conversion_group_manual_campaign
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated clear of a manual campaign include/exclude on a conversion group.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_ad
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Create an ad on Google (RSA) or Meta in PAUSED state; review-gated, reversible via remove_ad.
+    Also supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_ad_creative
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Create a Meta ad creative (image / video / carousel); review-gated, reversible via UI.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_ad_group
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - chatgpt_ads
+  summary: Create a paused Google or ChatGPT Ads Ad Group; review-gated. ChatGPT Ads supports manual authored
+    Ads or a generative group.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_ad_label
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Create a Meta ad label on an account; review-gated, reversible via UI.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_ad_rule
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Create a Meta or TikTok automated ad rule; review-gated.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_ad_unit
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: 'Deprecated legacy compatibility: Create a ChatGPT Ads ad unit draft; review-gated.'
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_adset
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Create a review-gated Meta ad set or TikTok ad group. Meta is force-paused; TikTok defaults
+    to operation_status=DISABLE.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_bidding_strategy
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Create a reusable Google portfolio Target CPA or Target ROAS strategy.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_campaign
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Create a review-gated campaign on Google, Meta, TikTok, or ChatGPT Ads. Creation defaults to
+    PAUSED; TikTok preserves an explicitly approved ENABLED status.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_change_history_task
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: realtime
+  platforms:
+  - tiktok
+  summary: Create a TikTok asynchronous change-log export task.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_conversion_action
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Create an ENABLED Google Ads conversion action for attribution; review-gated.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_conversion_group
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated create of an Admin View conversion_group.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_custom_audience
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Create a Meta custom audience; review-gated, reversible via Meta UI. Also supports TikTok through
+    its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_gmv_max_campaign
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - tiktok
+  summary: Create a TikTok Shop GMV Max campaign.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/create_label
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Create a Google Ads label for organization tagging; review-gated, reversible.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_lead_form
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Create a Meta lead form attached to a Page; review-gated, reversible via UI.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_lookalike_audience
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Create a Meta lookalike audience from a source audience; review-gated, populates asynchronously.
+    Also supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_pixel
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Create a Meta or TikTok Pixel (ads pixel) on an ad account; review-gated, reversible via UI.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_pmax_campaign
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Create a complete Google Performance Max campaign (budget + campaign + asset group + assets
+    + optional audience signals) in one atomic mutate, PAUSED; review-gated, reversible via remove_campaign.
+    Google only.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_product_catalog
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: Create a Meta product catalog under the account business; review-gated platform write. Also
+    supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_product_feed
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: Create a Meta product feed in an owned catalog; review-gated platform write. Also supports
+    TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_rule_custom_audience
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - tiktok
+  summary: Create a TikTok rule-based custom audience.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_smart_plus_campaign
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - tiktok
+  summary: Create a TikTok Smart+ campaign.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_text_asset
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Create a Google Ads text asset (headline / description / long headline); returns the asset_id.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_user_list
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Create a Google CRM-based Customer Match user list destination; review-gated.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/create_youtube_video_asset
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Create a Google Ads YouTube video asset from an existing YouTube video id; returns the asset_id.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/delete_conversion_group
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated delete of an Admin View conversion_group.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/deploy_image_ads_batch
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Create many Meta image creatives and paused ads from existing image_hash values; review-gated
+    bulk write.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/download_change_history
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - tiktok
+  summary: Download a completed TikTok change-log export.
+- operation: action:ads/enable_ad_automation_audits
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: HITL provision or recover the current brand's 48-hour and weekly full-current-state Google,
+    Meta, TikTok, and ChatGPT Ads automation audits.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/establish_automation_baseline
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: HITL Google, Meta, TikTok, or ChatGPT Ads confirmation of a fresh provider state as a human
+    baseline.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/estimate_audience_size
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Estimate audience size for a Meta targeting spec or flat TikTok ad-group targeting.
+- operation: action:ads/gaql_search
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - google
+  summary: Realtime Google Ads GAQL exploration for native fields, segments, resource attributes, or combinations
+    outside cached query coverage.
+- operation: action:ads/generate_ad_preview
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read a Meta ad preview HTML iframe for a creative + ad_format; read-only. Also supports TikTok
+    through its provider-native contract.
+- operation: action:ads/generate_ad_units
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: 'Deprecated legacy compatibility: Generate ChatGPT Ads draft ad units from a landing page URL.'
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/get_account_info
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Read Meta, TikTok, or ChatGPT Ads account health and provider-native billing facts.
+- operation: action:ads/get_account_pages
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read Meta Pages promotable from this ad account; returns data[] with page id, name, category,
+    tasks. Also supports TikTok through its provider-native contract.
+- operation: action:ads/get_ad
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  - linkedin
+  summary: Read one Meta ad by id; returns realtime platform status, effective status, creative, tracking
+    specs, and timestamps. Also supports TikTok through its provider-native contract.
+- operation: action:ads/get_ad_creative
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  summary: Read one Meta ad creative by id; returns creative content and object_story_spec.
+- operation: action:ads/get_ad_creatives
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  summary: Read Meta ad creatives for a given ad; returns data[] with creative content and object_story_spec.
+- operation: action:ads/get_ad_group
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: Read one ChatGPT Ads Ad Group and its embedded Ads window; read-only.
+- operation: action:ads/get_adset
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read one Meta ad set by id; returns realtime platform status, targeting, budget, bidding, and
+    delivery-detail fields. Also supports TikTok through its provider-native contract.
+- operation: action:ads/get_bidding_strategy
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: Read one reusable Google portfolio bidding strategy.
+- operation: action:ads/get_campaign
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Read one Google, Meta, TikTok, or ChatGPT Ads campaign by id; returns realtime platform state.
+- operation: action:ads/get_catalog_diagnostics
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  summary: Read Meta product catalog diagnostics for feed and item quality issues.
+- operation: action:ads/get_change_history
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - google
+  - meta
+  summary: 'Live Google/Meta platform-side change history: Google change_event or Meta ad account activities;
+    distinct from Nex audit.'
+- operation: action:ads/get_change_history_task
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - tiktok
+  summary: Check a TikTok change-log export task.
+- operation: action:ads/get_connected_instagram_accounts
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  summary: Read Instagram accounts connected to this Meta ad account; returns data[] with the IG id and
+    username to use as instagram_user_id in creatives.
+- operation: action:ads/get_conversion_tracking_snippets
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: Read installable Google website or call-conversion tag snippets.
+- operation: action:ads/get_data_readiness
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: 'Read per-account window×scope data-readiness so you can plan a segmented audit: audit ready
+    windows now, flag not-ready windows as still syncing (never as zero).'
+- operation: action:ads/get_dataset_quality
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  summary: Read Meta Pixel/Dataset signal quality fields from Graph API.
+- operation: action:ads/get_gmv_max_availability
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - tiktok
+  summary: Check TikTok Shop GMV Max availability and prerequisites.
+- operation: action:ads/get_gmv_max_campaign
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - tiktok
+  summary: Read a TikTok Shop GMV Max campaign.
+- operation: action:ads/get_gmv_max_report
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - tiktok
+  summary: Read TikTok Shop GMV Max reporting.
+- operation: action:ads/get_google_ads_report
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - google
+  summary: Run a predefined, fixed-column Google Ads performance report.
+- operation: action:ads/get_insights
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  - linkedin
+  summary: Live Meta Insights for an account/campaign/adset/ad; returns data[] with actions and metrics
+    by breakdown. Also supports TikTok through its provider-native contract.
+- operation: action:ads/get_leads
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read Meta leads collected by a lead form or ad; returns data[] with field_data. Smart ad-id
+    fallback. Also supports TikTok through its provider-native contract.
+- operation: action:ads/get_offline_conversion_readiness
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  summary: Read whether this brand's Google Ads conversion actions and Meta pixels are configured to receive
+    offline (in-store) conversions, and what blocks each one.
+- operation: action:ads/get_opportunity_score
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  summary: Read Meta account opportunity_score and recommendations from Graph API.
+- operation: action:ads/get_pmax_campaign
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: Read a Google Performance Max campaign, asset-group state, attachments, and signal status.
+- operation: action:ads/get_product_catalog_details
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: Get live details for one owned Meta product catalog. Also supports TikTok through its provider-native
+    contract.
+- operation: action:ads/get_product_feed_details
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: Get live details for a Meta product feed in an owned catalog. Also supports TikTok through
+    its provider-native contract.
+- operation: action:ads/get_product_feed_rules
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  summary: Read rules configured on a Meta product feed.
+- operation: action:ads/get_recommendations
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: Live Google Ads recommendations with impact estimates; returns recommendations[].
+- operation: action:ads/get_resource_metadata
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - google
+  summary: Discover selectable, filterable, and sortable Google Ads fields for a GAQL resource before
+    building gaql_search raw.* inputs.
+- operation: action:ads/get_smart_plus_campaign
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - tiktok
+  summary: Read a TikTok Smart+ campaign.
+- operation: action:ads/get_smart_plus_material_report
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - tiktok
+  summary: Read TikTok Smart+ material overview or breakdown reporting.
+- operation: action:ads/get_tree_structure
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: Read the Google MCC customer tree under a manager account; returns hierarchical customers[].
+- operation: action:ads/list_account_negative_keywords
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: List account-level negative keywords from Google shared sets; read-only.
+- operation: action:ads/list_ad_accounts
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Discover brand-granted Google, Meta, TikTok, and ChatGPT Ads accounts; returns account_id values
+    required by later ads queries and ads actions.
+- operation: action:ads/list_ad_creatives
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  summary: List Meta ad creatives under an account; returns data[] with creative content and object_story_spec.
+- operation: action:ads/list_ad_group_negative_keywords
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: List negative keywords for a Google ad group; read-only.
+- operation: action:ads/list_ad_groups
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: List ChatGPT Ads Ad Groups, optionally scoped to one Campaign; read-only.
+- operation: action:ads/list_ad_labels
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  summary: Read Meta ad labels on an account; returns data[] with id and name.
+- operation: action:ads/list_ad_rules
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read Meta or TikTok automated ad rules and their provider-native rule specs.
+- operation: action:ads/list_ads
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - linkedin
+  summary: Read ads from Google/Meta Ads; returns ads[] or data[] with id, name, status, creative fields.
+    Also supports TikTok through its provider-native contract.
+- operation: action:ads/list_adsets
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read Meta ad sets; returns data[] with id, name, campaign_id, status, daily_budget, targeting.
+    Also supports TikTok through its provider-native contract.
+- operation: action:ads/list_bidding_strategies
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: List reusable Google portfolio Target CPA and Target ROAS strategies.
+- operation: action:ads/list_brand_campaigns
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: List brand-visible campaigns for manually linking a campaign to a conversion group via set_conversion_group_manual_campaign.
+- operation: action:ads/list_campaign_negative_keywords
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: List negative keywords for a Google campaign; read-only.
+- operation: action:ads/list_campaigns
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Read campaigns from Google, Meta, TikTok, or ChatGPT Ads; returns platform-native campaign
+    rows.
+- operation: action:ads/list_conversion_actions
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: List synced platform conversion actions that can be mapped into conversion groups for the caller's
+    brand-granted ad accounts.
+- operation: action:ads/list_conversion_goals
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: List platform conversion goals visible to the brand. A goal is the bridge that links a conversion
+    group to the campaigns optimizing for it.
+- operation: action:ads/list_conversion_groups
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Discover conversion group slugs and derived CPA/ROAS labels needed for cg.{slug}.* columns
+    in query_single_dimension. Scoped to the caller's brand.
+- operation: action:ads/list_conversions
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Deprecated alias for list_conversion_groups. Returns conversion group business fields under
+    rows for short-term compatibility.
+- operation: action:ads/list_countries
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: Read Google geo target constants for countries; returns countries[] with location_id, name,
+    country_code.
+- operation: action:ads/list_custom_audiences
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read Meta custom audiences; returns data[] with id, name, subtype, delivery_status. Also supports
+    TikTok through its provider-native contract.
+- operation: action:ads/list_customers
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: Read Google Ads accessible customers; returns customers[] with customer_id and resource_name.
+- operation: action:ads/list_dimensions
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Discover cached ads dimensions, metrics, filters, and scope caveats before building query_single_dimension
+    or query_multi_dimension calls.
+- operation: action:ads/list_languages
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  summary: Read Google language constants; returns languages[] with language_id, name, ISO code.
+- operation: action:ads/list_lead_forms
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read Meta lead forms on a Page; returns data[] with id, name, status, questions. Also supports
+    TikTok through its provider-native contract.
+- operation: action:ads/list_operation_records
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: List Nex-side ads action audit records for an account and date range, including before/after
+    payloads and operator metadata.
+- operation: action:ads/list_pixels
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read Meta or TikTok Pixels on an ad account; returns data[] with id, name, code, last_fired_time.
+- operation: action:ads/list_product_catalogs
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: List Meta product catalogs owned by the account business. Also supports TikTok through its
+    provider-native contract.
+- operation: action:ads/list_product_set_products
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: List products included in a Meta product set. Also supports TikTok through its provider-native
+    contract.
+- operation: action:ads/list_product_sets
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: List product sets configured in an owned Meta product catalog. Also supports TikTok through
+    its provider-native contract.
+- operation: action:ads/list_products
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: List products in an owned Meta catalog, or inspect one product by product_id. Also supports
+    TikTok through its provider-native contract.
+- operation: action:ads/list_saved_audiences
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Read Meta saved audiences (saved targeting specs); returns data[] with id, name, targeting.
+    Also supports TikTok through its provider-native contract.
+- operation: action:ads/migrate_legacy_ad_units
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: Migrate explicit legacy Ad Unit records into paused Ad Groups and authored Ads; review-gated
+    risk action.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/preview_automation_baseline
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Read-only Google, Meta, TikTok, or ChatGPT Ads automation observation and identity-bound approval
+    digest.
+- operation: action:ads/query_multi_dimension
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  summary: Cached ads breakdown across multiple dimensions; returns column-oriented raw platform metrics
+    for supported dimension combinations.
+- operation: action:ads/query_single_dimension
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Primary cached ads KPI query for one dimension; returns ROAS, CPA, CPP, conversion-group metrics,
+    derived metrics, and cg.{slug}.* fan-out.
+- operation: action:ads/register_automation_copy
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: HITL register a Google, Meta, TikTok, or ChatGPT Ads copy from one authoritative automation
+    intent.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_account_negative_keywords
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Remove account-level negative keywords (shared criteria) from a Google NEGATIVE_KEYWORDS shared
+    set by resource_name (atomic batch, type-checked pre-flight); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_ad
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - linkedin
+  summary: 'Remove an ad on Google (terminal) or archive on Meta; review-gated. TikTok: soft delete via
+    status/update DELETE — irreversible; the object can no longer change status, though it stays queryable
+    via the get/list action.'
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_ad_creative
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Hard-delete a Meta ad creative; review-gated, IRREVERSIBLE (true Graph DELETE, not an archive).
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_ad_group
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Remove a Google Ads ad group with terminal REMOVED status; review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_ad_group_label
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Detach a Google label from an ad group; review-gated, reversible via re-apply.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/remove_ad_group_negative_keywords
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Remove ad-group-level negative keywords from a Google ad group by resource_name (atomic batch,
+    type-checked pre-flight); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_ad_rule
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Hard-delete a Meta or TikTok automated ad rule; review-gated and IRREVERSIBLE.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_adset
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: 'Archive a Meta ad set; review-gated, reversible by un-archiving to PAUSED. TikTok: soft delete
+    via status/update DELETE — irreversible; the object can no longer change status, though it stays queryable
+    via the get/list a'
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_audience_targeting
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Remove ad-group audience criteria from a Google ad group by resource_name (atomic batch, type-checked
+    pre-flight, negative flag echoed); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_bidding_strategy
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Remove an unused Google portfolio bidding strategy.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/remove_campaign
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: 'Remove a campaign on Google/TikTok or archive on Meta/ChatGPT Ads; review-gated and stops
+    spend. TikTok: soft delete via status/update DELETE — irreversible; the object can no longer change
+    status, though it stays querya'
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_campaign_assets
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Detach Google extension assets (sitelink/callout/structured snippet) from a campaign by asset
+    id (atomic batch, link pre-flight, detach only — the asset survives); review-gated.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/remove_campaign_audience_targeting
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Remove campaign-level audience criteria from a Google campaign by resource_name (atomic batch,
+    type-checked pre-flight, negative flag echoed); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_campaign_label
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Detach a Google label from a campaign; review-gated, reversible via re-apply.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/remove_campaign_negative_keywords
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Remove campaign-level negative keywords from a Google campaign by resource_name (atomic batch,
+    type-checked pre-flight); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_conversion_action
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: PERMANENTLY remove a Google conversion action (status -> REMOVED, irreversible); GAQL pre-flight
+    echoes name+status; risk-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_conversion_group_rule
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated remove of a conversion_group rule.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/remove_custom_audience
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Hard-delete a Meta custom audience; review-gated, IRREVERSIBLE (true Graph DELETE, not an archive).
+    Also supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_keyword
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Remove a Google keyword with terminal REMOVED status; review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_label
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  summary: Remove a Meta ad label (by NAME) from a campaign/adset/ad/creative; review-gated, reversible
+    (re-apply).
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/remove_product_catalog
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: Hard-delete an owned Meta product catalog; review-gated, IRREVERSIBLE (true Graph DELETE, not
+    an archive). Also supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/remove_product_feed
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: Hard-delete a Meta product feed from an owned catalog; review-gated, IRREVERSIBLE (true Graph
+    DELETE, not an archive). Also supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/replace_campaign_ad_units
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - chatgpt_ads
+  summary: 'Deprecated legacy compatibility: Replace the full ChatGPT Ads ad-unit set on a campaign.'
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/resolve_terms
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Resolve ads words like ROAS, CPA, conversion group, search term, asset group, or change history
+    to the right ads action and payload hints.
+- operation: action:ads/search_geo_locations
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Search Meta ad geo location keys; returns data[] with location key, name, type. Also supports
+    TikTok through its provider-native contract.
+- operation: action:ads/search_interests
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Search Meta ad interest taxonomy; returns data[] with interest_id, name, audience size bounds.
+    Also supports TikTok through its provider-native contract.
+- operation: action:ads/send_conversion_event
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Send a review-gated server-side conversion to Meta CAPI or TikTok Events API 2.0.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/set_ad_schedule
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Replace the Google campaign ad schedule criteria (remove-all then create-new); review-gated,
+    non-atomic at criterion level.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/set_bid_modifier
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Set a Google campaign device bid modifier (replaces existing DEVICE criteria); review-gated.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/set_conversion_group_manual_campaign
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated manual include/exclude of a campaign on a conversion group.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/set_final_url_suffix
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Set the Google campaign final URL suffix (UTM tracking template); review-gated, reversible.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/set_geo_targeting
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Replace Google campaign location criteria (remove-all + create-new); review-gated, non-atomic
+    at criterion level.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/set_language_targeting
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Replace Google campaign language criteria (remove-all + create-new); review-gated, non-atomic
+    at criterion level.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/set_network_settings
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Toggle Google campaign search-partners or display-network distribution; review-gated, reversible.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/suggest_conversion_group_setup
+  namespace: ads
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Suggest onboarding templates for creating conversion groups from synced platform conversion
+    actions.
+- operation: action:ads/unbind_conversion_group_goal
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated unlink of a conversion goal from a conversion group.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_ad
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Update ad fields on Google/Meta; review-gated. Google RSA headlines/descriptions are immutable.
+    Also supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/update_ad_group
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - chatgpt_ads
+  summary: Update a Google or ChatGPT Ads Ad Group; review-gated. Enabling/activating may resume spend.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/update_ad_rule
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Update a Meta or TikTok automated ad rule (spec or status); review-gated, reversible by writing
+    back the previous values.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_adset
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Update Meta ad set fields; review-gated, setting status=ACTIVE resumes spend immediately. Also
+    supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/update_bidding_strategy
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Update a reusable Google portfolio Target CPA or Target ROAS strategy.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_campaign
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  - linkedin
+  summary: Update a Google, Meta, TikTok, or ChatGPT Ads campaign; review-gated. Activation can resume
+    or begin spend immediately.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/update_conversion_action
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Update a Google conversion action (name, status ENABLED|HIDDEN, category, value settings) via
+    field mask; risk-gated — value/category steer Smart Bidding.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/update_conversion_group
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  - meta
+  - tiktok
+  - chatgpt_ads
+  summary: Review-gated update of an Admin View conversion_group.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_custom_audience
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Update a Meta custom audience's name/description metadata; review-gated, reversible by writing
+    back the previous values. Also supports TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_gmv_max_campaign
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - tiktok
+  summary: Update a TikTok Shop GMV Max campaign.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/update_keyword
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Update a Google keyword's bid or status; review-gated, reversible if prior value known.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/update_pixel
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Rename a Meta or TikTok Pixel; review-gated, reversible by writing the previous name back.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_product_catalog
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: Rename an owned Meta product catalog; review-gated platform write. Also supports TikTok through
+    its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_product_feed
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: realtime
+  platforms:
+  - meta
+  - tiktok
+  summary: Update a Meta product feed's name or fetch schedule; review-gated platform write. Also supports
+    TikTok through its provider-native contract.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_smart_plus_campaign
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - tiktok
+  summary: Update a TikTok Smart+ campaign.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/update_smart_plus_campaign_status
+  namespace: ads
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - tiktok
+  summary: Update TikTok Smart+ campaign delivery status.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:ads/update_user_list
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Update a Google user list's metadata (name, description, membership_lifespan_days) via field
+    mask; review-gated, reversible.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/upload_custom_audience_file
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - tiktok
+  summary: Upload a base64-encoded TikTok custom-audience data file.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/upload_image
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Upload an image to a Meta or TikTok ad account from a public URL after HITL review and return
+    its provider-native asset ID.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/upload_image_asset
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - google
+  summary: Upload an image to a Google Ads account asset library from a public https URL after HITL review
+    and return the asset_id.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/upload_images
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Upload multiple images to a Meta ad account from direct base64 bytes or public URLs with bounded
+    concurrency after HITL review and return per-item image_hash values. Also supports TikTok through
+    its provider-native contr
+  token:
+    exchange: required
+    purpose: required
+- operation: action:ads/upload_video
+  namespace: ads
+  action_class: acting
+  consequence: physical
+  provider_mode: write
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 300
+  audit: required
+  freshness: synced
+  platforms:
+  - meta
+  - tiktok
+  summary: Upload a video to a Meta or TikTok ad account from a public URL after HITL review and return
+    video_id for async encoding or readiness checks.
+  token:
+    exchange: required
+    purpose: required
+- operation: action:appsflyer/list_accounts
+  namespace: appsflyer
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - appsflyer
+  summary: List the AppsFlyer accounts this brand can query.
+- operation: action:appsflyer/list_tools
+  namespace: appsflyer
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - appsflyer
+  summary: List the AppsFlyer attribution/analytics tools available for an account.
+- operation: action:appsflyer/query
+  namespace: appsflyer
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - appsflyer
+  summary: Run a read-only AppsFlyer tool (aggregated performance, SKAN, cost & ad-revenue integrations,
+    OneLink, audiences, app settings).
+- operation: action:appsflyer/request_change
+  namespace: appsflyer
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - appsflyer
+  summary: Request a non-allowlisted AppsFlyer tool (or a future write) via human approval.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:bigquery/get_table_schema
+  namespace: bigquery
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - bigquery
+  summary: Read one BigQuery table or view's column list (name, type, mode) plus its row and byte counts.
+- operation: action:bigquery/list_datasets
+  namespace: bigquery
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - bigquery
+  summary: List the BigQuery datasets in a connected GCP project; returns the dataset_id values the other
+    bigquery.* actions take.
+- operation: action:bigquery/list_tables
+  namespace: bigquery
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - bigquery
+  summary: List the tables and views in one BigQuery dataset; returns table_id values plus each entry's
+    type.
+- operation: action:bigquery/query
+  namespace: bigquery
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - bigquery
+  summary: 'Run one read-only GoogleSQL query against the connected BigQuery project. Always human-reviewed:
+    a person reads the SQL before it runs.'
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:composio/append_doc_from_markdown
+  namespace: composio
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - composio_managed
+  summary: Append richly formatted Markdown to an existing Google Doc through human review.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:composio/create_doc_from_markdown
+  namespace: composio
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - composio_managed
+  summary: Create a richly formatted Google Doc from Markdown through one human-reviewed semantic action.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:composio/graphql_mutate
+  namespace: composio
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - composio_managed
+  summary: Write to a GraphQL toolkit's official API by POSTing a mutation GraphQL document via human
+    approval.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:composio/graphql_query
+  namespace: composio
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - composio_managed
+  summary: Read from a GraphQL toolkit's official API by POSTing a query-only GraphQL document (relayed
+    through Composio; runs immediately).
+- operation: action:composio/list_accounts
+  namespace: composio
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - composio_managed
+  summary: List the connected third-party accounts (Gmail, Notion, Google Sheets, ...) this brand can
+    use.
+- operation: action:composio/proxy_get
+  namespace: composio
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - composio_managed
+  summary: Read from a connected account's official API (HTTP GET, relayed through Composio with the account
+    credential injected).
+- operation: action:composio/replace_doc_with_markdown
+  namespace: composio
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - composio_managed
+  summary: Replace the first tab of an existing Google Doc with richly formatted Markdown through human
+    review.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:composio/request_change
+  namespace: composio
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - composio_managed
+  summary: Write to a connected account's official API (POST/PUT/PATCH/DELETE) via human approval.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:doordash/get_sales_summary
+  namespace: doordash
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - doordash
+  summary: DoorDash sales aggregates (orders, fees, marketing, net) — no rows.
+- operation: action:doordash/list_cancelled_orders
+  namespace: doordash
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - doordash
+  summary: List DoorDash cancelled-order rows with aggregates.
+- operation: action:doordash/list_orders
+  namespace: doordash
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - doordash
+  summary: List DoorDash order rows (ORDER_DETAIL report) with aggregates.
+- operation: action:doordash/list_payouts
+  namespace: doordash
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - doordash
+  summary: List DoorDash payout rows (PAYOUT_SUMMARY report) with aggregates.
+- operation: action:doordash/list_promotion_performance
+  namespace: doordash
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - doordash
+  summary: List DoorDash promotion performance rows.
+- operation: action:doordash/list_sponsored_listing_performance
+  namespace: doordash
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - doordash
+  summary: List DoorDash Sponsored Listing (ads) performance rows.
+- operation: action:doordash/list_stores
+  namespace: doordash
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - doordash
+  summary: List the DoorDash stores this brand can read.
+- operation: action:doordash/list_transactions
+  namespace: doordash
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - doordash
+  summary: List DoorDash per-order transaction rows (fees, refunds, marketing).
+- operation: action:ga4/get_conversion_overview
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - ga4
+  summary: Cached GA4 key-event summary for a property over a date range; returns total key events, revenue,
+    and top converting traffic sources.
+- operation: action:ga4/get_daily_trend
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - ga4
+  summary: Cached GA4 daily KPI time series for a property over a date range; returns one row per day
+    for charting and anomaly detection.
+- operation: action:ga4/get_metadata
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - ga4
+  summary: Live GA4 Data API metadata discovery for one property; returns queryable dimensions and metrics,
+    including custom definitions when GA4 exposes them.
+- operation: action:ga4/get_property_overview
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - ga4
+  summary: Aggregate GA4 KPI snapshot for a property over a date range; returns one overview block with
+    users, sessions, page views, key events, and revenue.
+- operation: action:ga4/list_events
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - ga4
+  summary: Cached GA4 event breakdown for a property over a date range; returns rows of event_name with
+    event_count, event_value_micros, and per-event unique_users (deduplicated users) for funnel / conversion
+    analysis.
+- operation: action:ga4/list_metrics
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - ga4
+  summary: Discover GA4 metric slugs, units, and formulas from the Metric Registry before reading them
+    as field names in other ga4.* outputs.
+- operation: action:ga4/list_properties
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - ga4
+  summary: Discover org-bound GA4 properties; returns property_id values required by every other ga4.*
+    action.
+- operation: action:ga4/list_top_pages
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - ga4
+  summary: Cached GA4 top-page ranking for a date range; returns rows of page_path/page_title with views,
+    users, engagement, and key events.
+- operation: action:ga4/list_traffic_sources
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - ga4
+  summary: Cached GA4 traffic source ranking for a date range; returns rows of session_source/medium/campaign
+    with users, sessions, page views, and revenue.
+- operation: action:ga4/run_report
+  namespace: ga4
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - ga4
+  summary: Live GA4 Data API RunReport for ad-hoc custom dimension x metric queries, filters, date ranges,
+    and property-specific fields.
+- operation: action:gsc/get_daily_trend
+  namespace: gsc
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - gsc
+  summary: Daily Google Search organic time series for a property; returns one row per day (ascending)
+    with clicks, impressions, CTR, and position.
+- operation: action:gsc/inspect_url
+  namespace: gsc
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - gsc
+  summary: Inspect one URL's Google index status via the URL Inspection API; returns index verdict, coverage
+    state, canonical, mobile usability, and rich results.
+- operation: action:gsc/list_sitemaps
+  namespace: gsc
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - gsc
+  summary: List sitemaps submitted for a Search Console property; returns per-sitemap status, submitted/indexed
+    counts, warnings, and errors.
+- operation: action:gsc/list_sites
+  namespace: gsc
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - gsc
+  summary: Discover brand-granted Search Console properties; returns site_url values required by every
+    other gsc.* action.
+- operation: action:gsc/list_top_pages
+  namespace: gsc
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - gsc
+  summary: Top pages by Google Search organic performance for a property over a date range; returns page
+    rows with clicks, impressions, CTR, and position.
+- operation: action:gsc/list_top_queries
+  namespace: gsc
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - gsc
+  summary: Top Google Search queries for a property over a date range; returns query rows with clicks,
+    impressions, CTR, and average position.
+- operation: action:gsc/query_search_analytics
+  namespace: gsc
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - gsc
+  summary: Generic Search Console searchAnalytics.query for one property; returns clicks, impressions,
+    CTR, and position grouped by any dimension combination.
+- operation: action:integration/byo_mcp_read_tool
+  namespace: integration
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - byo_mcp
+  summary: Execute an authorized BYO MCP read tool through Gateway.
+- operation: action:integration/byo_mcp_request_change
+  namespace: integration
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: synced
+  platforms:
+  - byo_mcp
+  summary: Request HITL approval for a BYO MCP write tool.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:integration/list_tools
+  namespace: integration
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: synced
+  platforms:
+  - byo_mcp
+  summary: List published BYO MCP packages, tools, and credential grants for this brand.
+- operation: action:org/get_overview
+  namespace: org
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms: []
+  summary: Read the current organization's cross-brand overview.
+- operation: action:org/get_usage_summary
+  namespace: org
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms: []
+  summary: Read cross-brand usage, tokens, source split, and spend.
+- operation: action:org/list_activity
+  namespace: org
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms: []
+  summary: List the current organization's merged activity feed.
+- operation: action:org/list_brands
+  namespace: org
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms: []
+  summary: List live brands in the current organization.
+- operation: action:posthog/list_projects
+  namespace: posthog
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - posthog
+  summary: List the PostHog projects this brand can query.
+- operation: action:posthog/list_tools
+  namespace: posthog
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - posthog
+  summary: List the PostHog analytics tools available for a project.
+- operation: action:posthog/query
+  namespace: posthog
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - posthog
+  summary: Run a read-only PostHog analytics tool (trends, funnels, HogQL, etc.).
+- operation: action:posthog/request_change
+  namespace: posthog
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - posthog
+  summary: Request a PostHog write (feature flag / experiment / survey) via human approval.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:seo_hosting/delete_page
+  namespace: seo_hosting
+  action_class: acting
+  consequence: write
+  provider_mode: write
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 900
+  audit: required
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Delete a file-based SEO page's whole folder (index.html + page.json).
+- operation: action:seo_hosting/get_sections
+  namespace: seo_hosting
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Read the brand's section catalog (the content sections, i.e. the first URL path segments pages
+    can live under). Returns whether it is established and, if not, discovered seed sections.
+- operation: action:seo_hosting/get_status
+  namespace: seo_hosting
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: 'Where this brand''s SEO pages will be served: connected custom domains, live state, URL contract
+    (subdomain vs subdirectory), served sections, the asset CDN base URL, and the /brand/seo-hosting workspace
+    dir.'
+- operation: action:seo_hosting/list_pages
+  namespace: seo_hosting
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: List this brand's file-based SEO pages (from page.json), newest first. Use before authoring
+    to avoid duplicates and find internal-link targets.
+- operation: action:seo_hosting/publish_page
+  namespace: seo_hosting
+  action_class: acting
+  consequence: write
+  provider_mode: write
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 900
+  audit: required
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Publish a file-based SEO page after light validation (no custom JS, page.json fields). Flips
+    page.json to published. Returns advisory link_warnings (dead internal links, zero internal links)
+    and content_warnings (off-bra
+- operation: action:seo_hosting/put_page
+  namespace: seo_hosting
+  action_class: acting
+  consequence: write
+  provider_mode: write
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 900
+  audit: required
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Create or overwrite a file-based SEO page's HTML + metadata as a draft (API write path for
+    external callers like the Soku CLI; the in-product agent writes files directly). Call publish_page
+    after to go live.
+- operation: action:seo_hosting/put_sections
+  namespace: seo_hosting
+  action_class: acting
+  consequence: write
+  provider_mode: write
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 900
+  audit: required
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Establish or replace the brand's section catalog (the COMPLETE list of content sections). Required
+    before authoring pages in a new section.
+- operation: action:seo_hosting/reprovision_domain
+  namespace: seo_hosting
+  action_class: acting
+  consequence: write
+  provider_mode: write
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 900
+  audit: required
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Re-deploy a connected subdirectory (T4 worker/vercel) domain with its CURRENT sections and
+    re-verify — recovers a broken connection or re-applies after an external change. Does NOT change which
+    sections are mounted.
+- operation: action:seo_hosting/set_domain_sections
+  namespace: seo_hosting
+  action_class: acting
+  consequence: write
+  provider_mode: write
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 900
+  audit: required
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Set which sections a connected subdirectory (T4 worker/vercel) domain serves, then re-provision
+    + re-verify so the live worker/routes match. Use after adding a catalog section that an already-connected
+    T4 domain should s
+- operation: action:seo_hosting/unpublish_page
+  namespace: seo_hosting
+  action_class: acting
+  consequence: write
+  provider_mode: write
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 900
+  audit: required
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Unpublish a file-based SEO page (back to draft; stops serving).
+- operation: action:seo_hosting/upload_asset
+  namespace: seo_hosting
+  action_class: acting
+  consequence: write
+  provider_mode: write
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 900
+  audit: required
+  freshness: realtime
+  platforms:
+  - seo_hosting
+  summary: Upload an image / theme.css / font to the public CDN and get a stable absolute URL to reference
+    from page HTML (HTML+CSS only; no JS assets).
+- operation: action:shopify/graphql_query
+  namespace: shopify
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - shopify
+  summary: Run a read-only Shopify Admin GraphQL query (products, orders, customers, ...).
+- operation: action:shoplazza/get_order
+  namespace: shoplazza
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - shoplazza
+  summary: Read a single Shoplazza order by id (read-only).
+- operation: action:shoplazza/get_product
+  namespace: shoplazza
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - shoplazza
+  summary: Read a single Shoplazza product by its UUID (read-only).
+- operation: action:shoplazza/get_shop
+  namespace: shoplazza
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - shoplazza
+  summary: Read a Shoplazza store's shop metadata (name, domain, currency, ...).
+- operation: action:shoplazza/list_orders
+  namespace: shoplazza
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - shoplazza
+  summary: List orders from a Shoplazza store (page/limit or page_token, read-only).
+- operation: action:shoplazza/list_products
+  namespace: shoplazza
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - shoplazza
+  summary: List products from a Shoplazza store (cursor-paginated, read-only).
+- operation: action:sprout/list_profiles
+  namespace: sprout
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - sprout
+  summary: List a Sprout Social customer's social profiles and tags (LinkedIn, Facebook, Instagram, X,
+    ...).
+- operation: action:sprout/post_analytics
+  namespace: sprout
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - sprout
+  summary: Per-post analytics (impressions, reactions, clicks per published post) for a time range.
+- operation: action:sprout/profile_analytics
+  namespace: sprout
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - sprout
+  summary: Daily owned-profile analytics (impressions, engagement, follower growth) for a date range.
+- operation: action:stripe/list_accounts
+  namespace: stripe
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - stripe
+  summary: List the Stripe accounts this brand can query.
+- operation: action:stripe/list_tools
+  namespace: stripe
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - stripe
+  summary: List the Stripe payment/billing tools available for an account.
+- operation: action:stripe/query
+  namespace: stripe
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - stripe
+  summary: Run a read-only Stripe tool (balance, customers, invoices, subscriptions, etc.).
+- operation: action:stripe/request_change
+  namespace: stripe
+  action_class: acting
+  consequence: safety-critical
+  provider_mode: risk
+  provider_requires_review: true
+  human_in_the_loop: required
+  token_ttl_seconds: 120
+  audit: required
+  freshness: realtime
+  platforms:
+  - stripe
+  summary: Request a Stripe write (refund / payment link / coupon) via human approval.
+  token:
+    exchange: required
+    purpose: required
+  proof_of_possession: required
+- operation: action:toast/get_order
+  namespace: toast
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - toast
+  summary: Get one Toast order in full detail.
+- operation: action:toast/list_checks
+  namespace: toast
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - toast
+  summary: List Toast checks (bills) across a business day or time range.
+- operation: action:toast/list_orders
+  namespace: toast
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - toast
+  summary: List Toast order summaries for a business day or time range.
+- operation: action:toast/list_payments
+  namespace: toast
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - toast
+  summary: List Toast payment details for one paid business day.
+- operation: action:toast/list_refunds
+  namespace: toast
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - toast
+  summary: List Toast refunds issued on one business day.
+- operation: action:toast/list_restaurants
+  namespace: toast
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - toast
+  summary: List the Toast restaurant locations this brand can read.
+- operation: action:ubereats/get_order
+  namespace: ubereats
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - ubereats
+  summary: Get one Uber Eats order in full detail.
+- operation: action:ubereats/get_report
+  namespace: ubereats
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - ubereats
+  summary: Poll a requested Uber Eats report and read its rows once ready.
+- operation: action:ubereats/get_store
+  namespace: ubereats
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - ubereats
+  summary: Get one Uber Eats store's live details.
+- operation: action:ubereats/list_active_orders
+  namespace: ubereats
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - ubereats
+  summary: List a store's incoming Uber Eats orders (CREATED state only).
+- operation: action:ubereats/list_stores
+  namespace: ubereats
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - ubereats
+  summary: List the Uber Eats stores this brand can read (import-time snapshot).
+- operation: action:ubereats/request_report
+  namespace: ubereats
+  action_class: connected
+  consequence: read
+  provider_mode: read
+  provider_requires_review: false
+  human_in_the_loop: not-required
+  token_ttl_seconds: 3600
+  audit: recommended
+  freshness: realtime
+  platforms:
+  - ubereats
+  summary: Request an async Uber Eats CSV report (sales, payments, financials, history).

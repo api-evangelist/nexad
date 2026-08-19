@@ -1,19 +1,79 @@
-generated: '2026-07-20'
-method: searched
+generated: '2026-08-13'
+method: probed
 notes: >-
-  Probed the /.well-known/ discovery surface on the primary hosts. No documents
-  returned 200 during this pass; absence is valid recorded data. No WellKnown /
-  SecurityTxt pointer is emitted because nothing was found.
+  Second-pass probe of the /.well-known/ discovery surface across every host in
+  apis.yml. NO /.well-known/ document returned 200 on any host, so NO WellKnown or
+  SecurityTxt pointer is emitted — this file records an absence, and an absence
+  must not be scored as a presence. Read the status codes carefully, because two
+  different walls are involved: the public web hosts (nex.ad, soku.ai,
+  docs.nex.ad) genuinely 404 and answer with an HTML SPA/docs shell, while
+  api.soku.ai answers 401 on EVERY path including /.well-known/*, because a
+  blanket bearer-token gate sits in front of the whole host. A 401 there is not
+  evidence that a document exists behind it.
+  ONE THING DID CHANGE since the 2026-07-20 pass: https://soku.ai/llms.txt now
+  returns 200 text/plain with a real llms.txt (it was 404 last pass). llms.txt is
+  a root-path convention, not a /.well-known/ path, so it earns LLMsTxt and not
+  WellKnown. Saved verbatim to llms/nexad-soku-llms.txt.
+checked: '2026-08-13'
+well_known_hit: false
 hosts:
   - host: https://nex.ad
+    shell: HTML (Next.js app shell served on 404)
     documents:
       - {path: /.well-known/security.txt, status: 404}
       - {path: /.well-known/openid-configuration, status: 404}
       - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/oauth-protected-resource, status: 404}
       - {path: /.well-known/api-catalog, status: 404}
       - {path: /.well-known/ai-plugin.json, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
+      - {path: /.well-known/agent.json, status: 404}
       - {path: /llms.txt, status: 404}
   - host: https://soku.ai
+    shell: HTML (Next.js app shell served on 404)
     documents:
       - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/oauth-protected-resource, status: 404}
+      - {path: /.well-known/api-catalog, status: 404}
+      - {path: /.well-known/ai-plugin.json, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
+      - {path: /.well-known/agent.json, status: 404}
+      - {path: /llms.txt, status: 200, content_type: 'text/plain; charset=UTF-8', file: ../llms/nexad-soku-llms.txt, note: 'NEW since 2026-07-20 (was 404). Not a /.well-known/ path.'}
+      - {path: /llms-full.txt, status: 200, note: '150KB full docs index; deliberately NOT committed — *-llms-full.txt is gitignored.'}
+  - host: https://docs.nex.ad
+    shell: HTML (Docusaurus shell served on 404)
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/oauth-protected-resource, status: 404}
+      - {path: /.well-known/api-catalog, status: 404}
+      - {path: /.well-known/ai-plugin.json, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
+      - {path: /.well-known/agent.json, status: 404}
       - {path: /llms.txt, status: 404}
+  - host: https://api.soku.ai
+    shell: 'JSON auth wall: {"success":false,...,"error":{"code":"unauthorized"}}'
+    note: >-
+      Every path on this host returns 401 unauthenticated, including all
+      /.well-known/* paths. These are auth-wall responses, not document hits.
+    documents:
+      - {path: /.well-known/security.txt, status: 401}
+      - {path: /.well-known/openid-configuration, status: 401}
+      - {path: /.well-known/oauth-authorization-server, status: 401}
+      - {path: /.well-known/oauth-protected-resource, status: 401}
+      - {path: /.well-known/api-catalog, status: 401}
+      - {path: /.well-known/ai-plugin.json, status: 401}
+      - {path: /.well-known/agent-card.json, status: 401}
+      - {path: /.well-known/agent.json, status: 401}
+  - host: https://mcp.soku.ai
+    documents:
+      - {path: /, status: 522, note: 'Cloudflare origin connection timed out; host resolves but serves nothing.'}
+provider_gap: >-
+  The highest-value missing document for this provider is
+  /.well-known/oauth-protected-resource on api.soku.ai — it is what an MCP client
+  needs to discover how to authorize against the hosted MCP endpoint. A
+  /.well-known/security.txt pointing at the existing SECURITY.md would be the
+  second (the policy already exists; only its discovery path is missing).

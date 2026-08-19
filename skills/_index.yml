@@ -1,17 +1,75 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
-source: https://soku.ai/cli/skill.md
+source:
+  - https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/SKILL.md
+  - https://soku.ai/cli/skill.md
+  - https://soku.ai/skills
 notes: >-
-  Provider-published Agent Skill captured verbatim. Soku also operates an
-  open-source Skills hub (100+ marketing skills for Claude/ChatGPT/Cursor/Manus)
-  at https://soku.ai/skills; individual hub skills are installable via the Soku
-  CLI (`soku skill install <slug>`).
+  Every skill in this directory is PROVIDER-PUBLISHED and captured verbatim —
+  nothing here is generated on Nexad's behalf. Upgraded 2026-08-13: the previous
+  pass had captured only the single skill page at soku.ai/cli/skill.md. The
+  canonical source is the company's own MIT-licensed repository
+  (About-Intelligence/soku-cli), which ships a conformant Agent Skill under
+  skills/soku/ — SKILL.md acting as a router plus a seven-file references/
+  directory that the skill instructs an agent to load selectively by task. That
+  full tree is now saved under skills/soku/. Soku additionally operates a hub of
+  52 installable business skills at https://soku.ai/skills, backed by the
+  open-source About-Intelligence/awesome-marketing-skills repo; those are
+  installed at runtime via `soku skill install <slug>` and are indexed below by
+  reference rather than copied.
 skills:
+  - file: soku/SKILL.md
+    name: soku
+    title: Soku CLI
+    provider_published: true
+    verbatim: true
+    license: MIT
+    skill_version: '0.4'
+    author: About Intelligence
+    api: https://api.soku.ai
+    source: https://raw.githubusercontent.com/About-Intelligence/soku-cli/main/skills/soku/SKILL.md
+    description: >-
+      Use when calling Soku CLI capabilities from a shell: auth, workspace
+      selection, ads/GA4/PostHog data reads, typed ads writes, SEO Hosting,
+      automations, Context Hub files, temporary file publishing, brand skills,
+      third-party egress, review-gated writes, skill installation, or CLI updates.
+    structure: router + references
+    operations:
+      - soku auth login
+      - soku auth status
+      - soku workspace resolve
+      - soku workspace use-brand
+      - soku skill install
+      - soku ads
+      - soku ga4
+      - soku posthog
+      - soku egress
+      - soku review approve
+    references:
+      - file: soku/references/auth-workspace.md
+        covers: First-time setup, expired token, workspace selection, org/brand ambiguity.
+      - file: soku/references/capability-flow.md
+        covers: Discover -> inspect -> run loop; namespace discovery; raw `soku call` escape hatch.
+      - file: soku/references/data-capabilities.md
+        covers: Ads, GA4 and PostHog reads; cached-first guidance; Google GAQL fallback.
+      - file: soku/references/ads-write.md
+        covers: Meta/Google/ChatGPT Ads writes, asset upload, bulk create, the review gate.
+      - file: soku/references/egress-security.md
+        covers: Third-party APIs via server-side credential injection; security rules.
+      - file: soku/references/seo-automation-files.md
+        covers: SEO Hosting, automations, Context Hub files, temporary public file URLs.
+      - file: soku/references/skills-updates.md
+        covers: Installing, updating and removing Soku-managed local skills.
   - file: nexad-soku-cli-agent.md
     name: Use Soku CLI With an AI Agent
     provider_published: true
+    verbatim: true
     api: https://api.soku.ai
     source: https://soku.ai/cli/skill.md
+    description: >-
+      The web-published variant of the CLI setup skill, captured in the 2026-07-20
+      pass. Retained: it is a separately published document at a stable URL, and it
+      is prose-complete where the repo SKILL.md is a router.
     operations:
       - soku auth login
       - soku workspace use-brand
@@ -21,4 +79,15 @@ skills:
       - soku egress
 hub:
   url: https://soku.ai/skills
-  description: 100+ open-source marketing skills (SEO, content, ads, email) for use in Claude, ChatGPT, Cursor, and Manus.
+  repository: https://github.com/About-Intelligence/awesome-marketing-skills
+  license: MIT
+  count: 52
+  install: soku skill install <slug>
+  naming: Installed skills carry a `soku-` prefix (soku-ads-report, soku-google-ads); invoke as `use @soku-ads-report skill`.
+  targets: [Claude, ChatGPT, Cursor, Manus]
+  description: >-
+    Open-source marketing skills spanning ad creative, A/B testing, SEO, AI SEO,
+    copywriting, page CRO, pricing strategy, email and reporting.
+  note: >-
+    Not copied into this repo — these are installed at runtime from the hub and the
+    catalogue is maintained upstream. Indexed here so the surface is discoverable.

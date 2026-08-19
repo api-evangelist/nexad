@@ -1,19 +1,69 @@
-generated: '2026-07-20'
-method: searched
+generated: '2026-08-13'
+method: probed
 status: published
 source: https://api.soku.ai/mcp
 notes: >-
-  Soku exposes an authenticated MCP endpoint. A live probe of
-  https://api.soku.ai/mcp returned HTTP 401 (auth required) and mcp.soku.ai
-  resolves, indicating a real hosted MCP server gated behind the same Soku
-  device-login token used by the CLI. The tool list could not be enumerated
-  without authentication, so tools are unknown. Separately, the Soku CLI is the
-  primary agent-integration surface for Claude Code / Codex / Cursor.
+  Soku operates an authenticated hosted MCP server. Re-probed 2026-08-13: a
+  JSON-RPC POST of {"jsonrpc":"2.0","id":1,"method":"tools/list"} with
+  Accept: application/json, text/event-stream returned HTTP 401 with the
+  platform's standard envelope
+  {"success":false,...,"error":{"code":"unauthorized","message":"Invalid or expired token"}}.
+  The live tool list therefore could not be enumerated anonymously and `tools[]`
+  is deliberately EMPTY rather than populated with guesses.
+  Two things worth recording about the auth challenge. First, it is the platform's
+  own JSON envelope, not an MCP/OAuth challenge — there is no WWW-Authenticate
+  header, and /.well-known/oauth-protected-resource returns 401 too, so an MCP
+  client has no anonymous path to discover how to authorize. Second, mcp.soku.ai
+  resolves in DNS but its origin returns Cloudflare 522 (connection timed out), so
+  the callable endpoint is the /mcp path on the API host, not the mcp subdomain.
+  The provider's own agent skill states the CLI "talks to Soku over /api/cli/*; no
+  MCP host is required", which positions the CLI — not MCP — as the primary
+  agent-integration path for this platform.
 server:
   name: soku
   transport: http
   url: https://api.soku.ai/mcp
   auth: required
+  auth_scheme: bearer (OAuth 2.0 device flow, same token as the CLI)
   probe_status: 401
-  probed: '2026-07-20'
+  probed: '2026-08-13'
+  well_known_oauth_protected_resource:
+    url: https://api.soku.ai/.well-known/oauth-protected-resource
+    status: 401
+    note: Not anonymously readable, so MCP authorization is not discoverable per the MCP auth spec.
+  subdomain_probe:
+    url: https://mcp.soku.ai/
+    status: 522
+    note: Resolves but the origin does not answer; not the callable endpoint.
+deployment:
+  mode: remote
+  endpoint: https://api.soku.ai/mcp
+  auth: oauth
+  verified: probed
+  checked: '2026-08-13'
+  note: >-
+    A remote HTTPS endpoint an MCP client POSTs to. No stdio package is published
+    — @soku-ai/cli is a CLI, not an MCP stdio server, and the provider says
+    explicitly that no MCP host is required to use it.
 tools: []
+tools_enumeration:
+  status: auth-gated
+  attempted: tools/list JSON-RPC POST
+  result: HTTP 401
+  fallback: >-
+    No tool names could be recovered from an anonymous source. The provider's
+    llms.txt lists product pages, not MCP tools, and the CLI capability registry
+    (cli/nexad-capabilities.json, 281 actions) describes the /api/cli/* surface —
+    which is a DIFFERENT surface from /mcp. Mapping the 281 CLI actions onto MCP
+    tool names would be an inference, not a finding, so it is not done here. See
+    cli/nexad-cli.yml for the registry-backed capability surface, and
+    agentic-access/nexad-agentic-access.yml for its per-action governance model.
+byo_mcp:
+  note: >-
+    Distinct from the server above and worth not confusing with it: Soku also acts
+    as an MCP CLIENT. The `integration` namespace exposes byo_mcp_read_tool,
+    byo_mcp_request_change and list_tools, letting a brand bring its own MCP
+    packages and call their tools through Soku's Gateway with credential grants —
+    reads allowlisted, writes routed through the human review gate. The `adjust`
+    and `posthog` namespaces similarly proxy those vendors' own MCP tool catalogs.
+  actions: [action:integration/byo_mcp_read_tool, action:integration/byo_mcp_request_change, action:integration/list_tools]

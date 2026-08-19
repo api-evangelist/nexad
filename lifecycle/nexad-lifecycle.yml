@@ -1,26 +1,103 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
 source:
   - https://api.soku.ai
   - https://soku.ai/changelog
+  - https://registry.npmjs.org/@soku-ai/cli
+  - https://github.com/About-Intelligence/soku-cli/blob/main/SECURITY.md
+  - cli/nexad-capabilities.json
 product: Soku (NexStudio) API
 versioning:
   scheme: uri-path
   current: v1
-  api_release: v4.34.1
+  api_release: v4.61.0
+  previous_observed_release: v4.34.1
+  previous_observed_date: '2026-07-20'
   detail: >-
-    The Soku API root (https://api.soku.ai) reports {"message":"Welcome to
-    NexStudio API","version":"v4.34.1"} and exposes an authenticated /v1 path.
+    The API root (https://api.soku.ai) returns
+    {"message":"Welcome to NexStudio API","version":"v4.61.0"} while the callable
+    paths are /v1 and /api/cli/*. Build version and contract version are separate
+    numbers — the build moved v4.34.1 -> v4.61.0 in 24 days while /v1 did not
+    change, so an agent must not treat the root version as an API contract version.
+  cli_versioning:
+    scheme: semver-prerelease
+    package: '@soku-ai/cli'
+    current: 0.1.0-alpha.17
+    published: '2026-08-03'
+    releases_total: 17
+    note: The CLI is still on an alpha prerelease train; expect breaking CLI changes.
 changelog: https://soku.ai/changelog
+changelog_cadence: near-daily
 deprecation:
   policy_url: null
-  sunset_header: null
-  notes: No published deprecation/sunset policy found during this pass.
-status_page:
-  url: null
-  notes: >-
-    No confirmed public status page. status.soku.ai resolves (Cloudflare) but did
-    not return content during the probe; not asserted.
+  sunset_header: false
+  deprecation_header: false
+  detail: >-
+    No published deprecation or sunset policy, and no RFC 8594 Sunset/Deprecation
+    headers observed on live responses. Deprecation IS communicated, but only as
+    prose inside the capability registry's action descriptions — which means a
+    machine can find it, but only by reading descriptions. No dates, no removal
+    schedule, and no supersession field. The one formal statement of support
+    window in the whole surface is in the CLI's SECURITY.md: "Security fixes are
+    applied to the latest published release on npm (@soku-ai/cli). Older versions
+    are not maintained."
+  supported_versions_statement: https://github.com/About-Intelligence/soku-cli/blob/main/SECURITY.md
+deprecated_operations:
+  source: cli/nexad-capabilities.json
+  note: >-
+    Actions the provider marks deprecated in the registry. The ChatGPT Ads
+    "ad unit" model is the substantive one — it has been superseded by the
+    Campaign -> Ad Group -> Ad object model, and the legacy actions are retained
+    on the raw `soku call ads <action>` surface for existing campaigns only.
+    `soku ads chatgpt campaign migrate-legacy` is the published migration path.
+  operations:
+    - id: action:ads/create_ad_unit
+      status: deprecated
+      reason: Legacy ChatGPT Ads ad-unit model, superseded by Campaign -> Ad Group -> Ad.
+      replacement: action:ads/create_campaign with an inline ad-groups array
+    - id: action:ads/generate_ad_units
+      status: deprecated
+      reason: Legacy ChatGPT Ads ad-unit model.
+      replacement: generative ad groups on ads/create_ad_group
+    - id: action:ads/add_campaign_ad_units
+      status: deprecated
+      reason: Legacy ChatGPT Ads ad-unit model.
+      replacement: action:ads/create_ad
+    - id: action:ads/replace_campaign_ad_units
+      status: deprecated
+      reason: Legacy ChatGPT Ads ad-unit model.
+      replacement: authored Ad Groups + Ads
+    - id: action:ads/archive_ad_unit
+      status: deprecated
+      reason: Legacy ChatGPT Ads ad-unit model.
+      replacement: action:ads/archive_ad
+    - id: action:ads/list_conversions
+      status: deprecated
+      reason: Deprecated alias.
+      replacement: action:ads/list_conversion_groups
+  migration_command: soku ads chatgpt campaign migrate-legacy
 sla:
   url: null
-deprecated_operations: []
+  uptime_target: null
+  note: No published SLA. "Priority support" is a Pro-tier inclusion and "dedicated success manager" an Enterprise one; neither is an availability commitment.
+status_page:
+  url: null
+  probed:
+    - {url: 'https://status.soku.ai', status: 000, note: 'does not resolve to a served origin'}
+    - {url: 'https://soku.ai/status', status: 404}
+  note: >-
+    No public status page. Re-probed 2026-08-13 and confirmed negative — the
+    2026-07-20 pass had recorded status.soku.ai as resolving-but-empty; it now
+    returns no response at all. No StatusPage pointer is emitted.
+support:
+  slack: https://join.slack.com/t/soku-talk/shared_invite/zt-3s9i1a4w7-AWlkU3GAiar3wJM4ToYLEg
+  docs: https://soku.ai/docs/support-and-refunds
+  email: hello@soku.ai
+  security_email: security@soku.ai
+maturity:
+  stage: active-development
+  evidence:
+    - Near-daily dated changelog with substantive product entries.
+    - API build version moved v4.34.1 -> v4.61.0 in 24 days.
+    - CLI published to npm 17 times, latest 2026-08-03.
+    - 38 public repositories in the About-Intelligence GitHub org.

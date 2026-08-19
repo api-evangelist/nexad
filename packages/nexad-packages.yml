@@ -1,41 +1,98 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
-source: https://docs.nex.ad/docs/android/getting-started
+source:
+  - https://registry.npmjs.org/@soku-ai/cli
+  - https://github.com/About-Intelligence/soku-cli
+  - https://docs.nex.ad/docs/android/getting-started
+  - https://search.maven.org/solrsearch/select?q=g:com.nexad
 notes: >-
-  Nexad publishes two first-party developer libraries: the Nexad Android Ads SDK
-  (documented on docs.nex.ad) and the Soku CLI (documented on soku.ai/cli and in
-  the official agent skill at soku.ai/cli/skill.md). Package coordinates below are
-  taken verbatim from the provider's own documentation. registry_status records
-  what a live registry lookup returned during this enrichment pass.
+  Nexad publishes two first-party developer libraries under two different brands,
+  and their currency evidence could not be more different. The Soku CLI is a live,
+  actively released npm package with a public MIT-licensed source repository in the
+  company's own GitHub org. The Nexad Android SDK is documented with a Maven
+  coordinate that DOES NOT EXIST on Maven Central — re-verified 2026-08-13, ten
+  months after the previous check returned the same result. version/published are
+  structured fields read from the registry metadata endpoints, not prose.
 packages:
-  - language: kotlin
-    platform: android
-    registry: maven-central
-    name: com.nexad:sdk
-    version: 1.0.0
-    url: https://docs.nex.ad/docs/android/getting-started
-    install: 'implementation("com.nexad:sdk:1.0.0")'
-    official: true
-    source: https://docs.nex.ad/docs/android/getting-started
-    registry_status: not-found-on-maven-central-2026-07-20
-    description: >-
-      Nexad Android SDK. Supports Java and Kotlin. Ad formats: native ads,
-      WebView-based ads, chat message ads, and modal overlay ads. Documented
-      coordinate; also distributable as a local nexad-sdk-1.0.0.aar.
   - language: javascript
     platform: node
     registry: npm
     name: '@soku-ai/cli'
-    url: https://soku.ai/cli
-    install: 'npm i -g @soku-ai/cli'
+    version: 0.1.0-alpha.17
+    published: '2026-08-03'
+    url: https://www.npmjs.com/package/@soku-ai/cli
+    url_docs: https://soku.ai/cli
+    source_repository: https://github.com/About-Intelligence/soku-cli
+    install: npm i -g @soku-ai/cli
     binary: soku
-    version: 0.1.0-alpha.14
-    url_registry: https://www.npmjs.com/package/@soku-ai/cli
     official: true
-    source: https://soku.ai/cli/skill.md
-    registry_status: published-on-npm-2026-07-20
+    license: MIT
+    engines: 'node >=20'
+    releases_total: 17
+    registry_status: published-on-npm-2026-08-13
     description: >-
-      Soku CLI (binary `soku`) — connects shell-based AI agents (Claude Code,
-      Codex, Cursor) to the Soku marketing platform. Requires Node.js 20+. The
-      provider's own skill.md notes the package may report unavailable; recorded
-      here as first-party per official documentation.
+      Soku CLI — call Soku ads/GA4/PostHog data capabilities from any AI agent or
+      shell. Talks to Soku over /api/cli/*; no MCP host required. Ships a bundled
+      Agent Skill (skills/soku/SKILL.md + references/) and the 281-action capability
+      registry (src/generated/capabilities.json) in the published tarball.
+    currency_note: >-
+      Actively maintained: version moved 0.1.0-alpha.14 -> 0.1.0-alpha.17 between
+      the 2026-07-20 and 2026-08-13 enrichment passes, and the repository was
+      pushed to on 2026-08-13. Still an ALPHA prerelease train, so the CLI surface
+      should be treated as unstable. 306 GitHub stars.
+    dependencies: [commander, fflate, open, qrcode-terminal]
+    optional_dependencies: [keytar]
+  - language: kotlin
+    platform: android
+    registry: maven-central
+    name: com.nexad:sdk
+    version: null
+    published: null
+    url: https://docs.nex.ad/docs/android/getting-started
+    install: 'implementation("com.nexad:sdk:1.0.0")'
+    documented_version: 1.0.0
+    official: true
+    registry_status: not-found-on-maven-central-2026-08-13
+    description: >-
+      Nexad Android SDK. Java and Kotlin. Ad formats: native ads, WebView-based
+      ads, chat message ads, and modal overlay ads — including contextual ads for
+      AI-chat interfaces. Initialized with an App ID + Publisher ID issued after a
+      contact-form request.
+    currency_note: >-
+      version and published are NULL because the registry has nothing to report,
+      not because they were unchecked. A Maven Central search for groupId
+      `com.nexad` returned numFound:0 on 2026-08-13, the same result as the
+      2026-07-20 pass. The docs publish the Gradle coordinate
+      com.nexad:sdk:1.0.0 and also offer a local nexad-sdk-1.0.0.aar, so the
+      practical distribution appears to be a direct AAR handed to publishers
+      rather than a public artifact. A consumer copying the documented
+      `implementation(...)` line from the docs into a standard build will not
+      resolve it.
+    verification:
+      endpoint: https://search.maven.org/solrsearch/select?q=g:com.nexad
+      result: numFound 0
+      checked: '2026-08-13'
+source_repositories:
+  organization: https://github.com/About-Intelligence
+  organization_name: Nexad
+  public_repos: 38
+  verified: 'GitHub org About-Intelligence — display name "Nexad", blog https://nex.ad, email ceo@nex.ad'
+  notable:
+    - name: soku-cli
+      url: https://github.com/About-Intelligence/soku-cli
+      language: TypeScript
+      license: MIT
+      stars: 306
+      last_push: '2026-08-13'
+      description: Soku CLI source, bundled agent skill, and the capability registry.
+    - name: awesome-marketing-skills
+      url: https://github.com/About-Intelligence/awesome-marketing-skills
+      language: TypeScript
+      stars: 7
+      last_push: '2026-04-01'
+      description: Open-source marketing skills hub backing https://soku.ai/skills.
+  note: >-
+    The remaining 36 repositories are single-purpose "open*" marketing-skill repos
+    (openroas, openppc, opencreatives, ...) created in bulk and pushed on
+    2026-08-13; none carries a description, a language or a star, so they are
+    recorded as present but not catalogued as developer libraries.
