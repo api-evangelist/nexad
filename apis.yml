@@ -17,6 +17,18 @@ description: >-
   a read/write/risk mode and a requires_review flag — 124 of the 281 actions are
   human-approval-gated at runtime.
 url: https://raw.githubusercontent.com/api-evangelist/nexad/refs/heads/main/apis.yml
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: true
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - pricing
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: self-serve
