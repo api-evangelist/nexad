@@ -137,6 +137,9 @@ apis:
   - type: Plans
     url: plans/nexad-plans-pricing.yml
 common:
+- type: License
+  name: MIT
+  url: https://github.com/About-Intelligence/soku-cli/blob/main/LICENSE
 - type: Website
   url: https://nex.ad
 - type: DeveloperPortal
