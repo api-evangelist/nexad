@@ -110,6 +110,10 @@ apis:
   baseURL: https://api.soku.ai
   tags:
   - Marketing
+  - AI Agents
+  - Analytics
+  tags_raw:
+  - Marketing
   - AI Agent
   - Analytics
   properties:
