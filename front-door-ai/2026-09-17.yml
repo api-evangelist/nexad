@@ -1,0 +1,29 @@
+# Front Door AI Index — nexad — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: nexad
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: nex.ad
+  final_host: nex.ad
+  ownership: own
+  owner: nexad
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 33
+  host_score: 33
+  density: 58.41
+  words: 565
+  tiers:
+    agentic: 1
+    core: 23
+    model: 9
+  ambiguous: 4
+  top_terms:
+    AI: 23
+    ChatGPT: 9
+    agent: 3
+    AI assistant: 1
+    intelligence: 1
