@@ -59,3 +59,16 @@ byo_mcp:
   - action:integration/byo_mcp_read_tool
   - action:integration/byo_mcp_request_change
   - action:integration/list_tools
+rfc9728:
+  endpoint: https://api.soku.ai/mcp
+  metadata_url: https://api.soku.ai/.well-known/oauth-protected-resource/mcp
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://api.soku.ai/mcp
+    authorization_servers:
+    - https://api.soku.ai/connect
+    bearer_methods_supported:
+    - header
